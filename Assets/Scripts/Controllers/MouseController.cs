@@ -18,7 +18,11 @@ public class MouseController : MonoBehaviour
         Vector3 currentMousePosition = GetCurrentMousePosition();
 
         // Update the circleCursor position
-        circleCursor.transform.position = currentMousePosition;
+        Vector3 circleCursorPos = currentMousePosition;
+        circleCursorPos.x = Mathf.RoundToInt(circleCursorPos.x);
+        circleCursorPos.y = Mathf.RoundToInt(circleCursorPos.y);
+
+        circleCursor.transform.position = circleCursorPos;
 
         // Handle screen dragging
         if (Input.GetMouseButton(1) || Input.GetMouseButton(2))
