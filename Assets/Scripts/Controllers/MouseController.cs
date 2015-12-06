@@ -37,7 +37,6 @@ public class MouseController : MonoBehaviour
         _lastMousePosition = GetCurrentMousePosition();
     }
 
-    // TODO: Let's LERP this
     private void HandleKeyboardScroll()
     {
         float translationX = Input.GetAxis("Horizontal");
@@ -87,13 +86,11 @@ public class MouseController : MonoBehaviour
         }
     }
 
-    // TODO: Maybe we should LERP this too?
     private void HandleScreenDrag()
     {
         if (Input.GetMouseButton(1) || Input.GetMouseButton(2))
         {
-            Vector3 difference = _lastMousePosition - GetCurrentMousePosition();
-            Camera.main.transform.Translate(difference);
+            Camera.main.transform.Translate(_lastMousePosition - GetCurrentMousePosition());
         }
     }
 
