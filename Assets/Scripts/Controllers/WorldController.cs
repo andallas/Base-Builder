@@ -3,20 +3,27 @@ using System.Collections;
 
 public class WorldController : MonoBehaviour
 {
-    public Sprite floorSprite;
+    public static WorldController Instance { get; protected set; }
+    public World WorldData { get; protected set; }
 
-    private World world;
+    public Sprite floorSprite;
 
 
 	void Start()
     {
-        world = new World();
-
-        for (int x = 0; x < world.Width; x++)
+        if (Instance != null)
         {
-            for (int y = 0; y < world.Height; y++)
+            Debug.LogWarning("Found extra world controller.");
+        }
+        Instance = this;
+
+        WorldData = new World();
+
+        for (int x = 0; x < WorldData.Width; x++)
+        {
+            for (int y = 0; y < WorldData.Height; y++)
             {
-                Tile tile_data = world.GetTileAt(x, y);
+                Tile tile_data = WorldData.GetTileAt(x, y);
 
                 GameObject tile_go = new GameObject();
                 tile_go.name = "Tile_" + x + "_" + y;
@@ -29,7 +36,7 @@ public class WorldController : MonoBehaviour
             }
         }
 
-        world.RandomizeTiles();
+        WorldData.RandomizeTiles();
 	}
 
     void Update() { }
