@@ -1,9 +1,10 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public class MouseController : MonoBehaviour
 {
-    public GameObject circleCursor;
+    public GameObject circleCursorPrefab;
 
     private float fastSpeedMultiplier = 2;
     private float keyScrollSpeed = 2;
@@ -18,17 +19,18 @@ public class MouseController : MonoBehaviour
 
     private Vector3 _lastMousePosition;
     private Vector3 _dragStartPosition;
-    private Tile _currentTile;
+    private List<GameObject> _dragPreviewGameObjects;
 
 
     void Start()
     {
         _lastMousePosition = GetCurrentMousePosition();
+        _dragPreviewGameObjects = new List<GameObject>();
     }
 
     void Update()
     {
-        UpdateCursor();
+        //UpdateCursor();
         HandleLeftClick();
         HandleKeyboardScroll();
         HandleZoom();
@@ -39,32 +41,59 @@ public class MouseController : MonoBehaviour
 
     private void HandleLeftClick()
     {
+        // Start Drag
         if (Input.GetMouseButtonDown(0))
         {
             _dragStartPosition = GetNormalizedMousePosition();
         }
 
+
+        while (_dragPreviewGameObjects.Count > 0)
+        {
+            GameObject go = _dragPreviewGameObjects[0];
+            _dragPreviewGameObjects.RemoveAt(0);
+            SimplePool.Despawn(go);
+        }
+
+        if (Input.GetMouseButton(0))
+        {
+            Vector3 currentMousePosition = GetNormalizedMousePosition();
+
+            int start_x = (int)_dragStartPosition.x;
+            int end_x = (int)currentMousePosition.x;
+            int start_y = (int)_dragStartPosition.y;
+            int end_y = (int)currentMousePosition.y;
+
+            if (end_x < start_x) { int tempX = end_x; end_x = start_x; start_x = tempX; }
+            if (end_y < start_y) { int tempY = end_y; end_y = start_y; start_y = tempY; }
+
+            for (int x = start_x; x <= end_x; x++)
+            {
+                for (int y = start_y; y <= end_y; y++)
+                {
+                    Tile tile = WorldController.Instance.WorldData.GetTileAt(x, y);
+                    if (tile != null)
+                    {
+                        GameObject go = SimplePool.Spawn(circleCursorPrefab, new Vector3(x, y, 0), Quaternion.identity);
+                        go.transform.SetParent(this.transform);
+                        _dragPreviewGameObjects.Add(go);
+                    }
+                }
+            }
+        }
+
+        // End drag
         if (Input.GetMouseButtonUp(0))
         {
             Vector3 currentMousePosition = GetNormalizedMousePosition();
 
             int start_x = (int)_dragStartPosition.x;
             int end_x = (int)currentMousePosition.x;
-            if (end_x < start_x)
-            {
-                int tempX = end_x;
-                end_x = start_x;
-                start_x = tempX;
-            }
-
             int start_y = (int)_dragStartPosition.y;
             int end_y = (int)currentMousePosition.y;
-            if (end_y < start_y)
-            {
-                int tempY = end_y;
-                end_y = start_y;
-                start_y = tempY;
-            }
+
+            if (end_x < start_x) { int tempX = end_x;  end_x = start_x;  start_x = tempX; }
+            if (end_y < start_y) { int tempY = end_y;  end_y = start_y;  start_y = tempY; }
 
             for (int x = start_x; x <= end_x; x++)
             {
@@ -153,26 +182,18 @@ public class MouseController : MonoBehaviour
         return curMousePos;
     }
 
-    private Tile GetTileAtWorldCoord(Vector3 vec)
-    {
-        int x = Mathf.FloorToInt(vec.x);
-        int y = Mathf.FloorToInt(vec.y);
-
-        return WorldController.Instance.WorldData.GetTileAt(x, y);
-    }
-
-    private void UpdateCursor()
-    {
-        Vector3 normalizedMousePosition = GetNormalizedMousePosition();
-        _currentTile = GetTileAtWorldCoord(normalizedMousePosition);
-        if (_currentTile != null)
-        {
-            circleCursor.SetActive(true);
-            circleCursor.transform.position = normalizedMousePosition;
-        }
-        else
-        {
-            circleCursor.SetActive(false);
-        }
-    }
+    //private void UpdateCursor()
+    //{
+    //    Vector3 normalizedMousePosition = GetNormalizedMousePosition();
+    //    Tile currentTile = WorldController.Instance.GetTileAtWorldCoord(normalizedMousePosition);
+    //    if (currentTile != null)
+    //    {
+    //        circleCursor.SetActive(true);
+    //        circleCursor.transform.position = normalizedMousePosition;
+    //    }
+    //    else
+    //    {
+    //        circleCursor.SetActive(false);
+    //    }
+    //}
 }

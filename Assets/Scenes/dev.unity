@@ -87,48 +87,6 @@ NavMeshSettings:
 --- !u!127 &5
 LevelGameManager:
   m_ObjectHideFlags: 0
---- !u!1001 &15033247
-Prefab:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: 412348, guid: 7af9864e886382e4cafd5fd90f0f3495, type: 2}
-      propertyPath: m_LocalPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 412348, guid: 7af9864e886382e4cafd5fd90f0f3495, type: 2}
-      propertyPath: m_LocalPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 412348, guid: 7af9864e886382e4cafd5fd90f0f3495, type: 2}
-      propertyPath: m_LocalPosition.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 412348, guid: 7af9864e886382e4cafd5fd90f0f3495, type: 2}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 412348, guid: 7af9864e886382e4cafd5fd90f0f3495, type: 2}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 412348, guid: 7af9864e886382e4cafd5fd90f0f3495, type: 2}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 412348, guid: 7af9864e886382e4cafd5fd90f0f3495, type: 2}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 412348, guid: 7af9864e886382e4cafd5fd90f0f3495, type: 2}
-      propertyPath: m_RootOrder
-      value: 4
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-  m_ParentPrefab: {fileID: 100100000, guid: 7af9864e886382e4cafd5fd90f0f3495, type: 2}
-  m_IsPrefabParent: 0
 --- !u!1 &93389433
 GameObject:
   m_ObjectHideFlags: 0
@@ -208,11 +166,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 19950f2e0c3dfc44f8b9f9db1d12f996, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  circleCursor: {fileID: 1203511085}
---- !u!1 &1203511085 stripped
-GameObject:
-  m_PrefabParentObject: {fileID: 155918, guid: 7af9864e886382e4cafd5fd90f0f3495, type: 2}
-  m_PrefabInternal: {fileID: 15033247}
+  circleCursorPrefab: {fileID: 155918, guid: 7af9864e886382e4cafd5fd90f0f3495, type: 2}
 --- !u!1 &1595972189
 GameObject:
   m_ObjectHideFlags: 0
