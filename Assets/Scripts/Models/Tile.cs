@@ -61,5 +61,4 @@ public class Tile
     {
         cbTileTypeChanged -= callback;
     }
-
 }

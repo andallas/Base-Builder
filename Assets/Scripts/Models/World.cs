@@ -32,9 +32,9 @@ public class World
 
     public Tile GetTileAt(int x, int y)
     {
-        if (x < 0 || x > _width || y < 0 || y > _height)
+        if (x < 0 || x >= _width || y < 0 || y >= _height)
         {
-            Debug.LogError("Tile (" + x + ", " + y + ") is out of range.");
+            Debug.LogWarning("Tile (" + x + ", " + y + ") is out of range.");
             return null;
         }
 
@@ -62,5 +62,4 @@ public class World
             }
         }
     }
-
 }

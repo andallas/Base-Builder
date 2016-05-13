@@ -6,6 +6,7 @@ public class WorldController : MonoBehaviour
     public static WorldController Instance { get; protected set; }
     public World WorldData { get; protected set; }
 
+    // TODO: Use a key/value pair of sprites, keyed on Tile.TileType
     public Sprite floorSprite;
 
 
@@ -43,6 +44,7 @@ public class WorldController : MonoBehaviour
 
     void OnTileTypeChanged(Tile tile_data, GameObject tile_go)
     {
+        // TODO: Consider changing this to a switch statement
         if (tile_data.Type == Tile.TileType.Floor)
         {
             tile_go.GetComponent<SpriteRenderer>().sprite = floorSprite;
