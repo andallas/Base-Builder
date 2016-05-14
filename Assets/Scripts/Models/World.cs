@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
-using System.Collections;
+using System.Collections.Generic;
+
 
 public class World
 {
@@ -11,6 +12,9 @@ public class World
 
     private int _height;
     public int Height { get { return _height; } }
+
+    private Dictionary<string, InstalledObject> _installedObjectPrototypes;
+
 
     public World(int width = 100, int height = 100)
     {
@@ -28,6 +32,8 @@ public class World
         }
 
         Debug.Log("World created with " + (_width * _height) + " tiles.");
+
+        CreateInstalledObjectPrototypes();
     }
 
     public Tile GetTileAt(int x, int y)
@@ -52,13 +58,20 @@ public class World
 
                 if (val == 0)
                 {
-                    _tiles[x, y].Type = Tile.TileType.Empty;
+                    _tiles[x, y].Type = TileType.Empty;
                 }
                 else
                 {
-                    _tiles[x, y].Type = Tile.TileType.Floor;
+                    _tiles[x, y].Type = TileType.Floor;
                 }
             }
         }
+    }
+
+
+    private void CreateInstalledObjectPrototypes()
+    {
+        _installedObjectPrototypes = new Dictionary<string, InstalledObject>();
+        _installedObjectPrototypes.Add("Wall", InstalledObject.CreatePrototype("Wall", 0));
     }
 }

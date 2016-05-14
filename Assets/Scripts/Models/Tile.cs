@@ -2,11 +2,10 @@
 using System.Collections;
 using System;
 
+public enum TileType { Empty, Floor };
+
 public class Tile
 {
-    public enum TileType { Empty, Floor };
-
-
     private TileType _type = TileType.Empty;
     public TileType Type
     {
@@ -60,5 +59,17 @@ public class Tile
     public void UnregisterTileTypeChangedCallback(Action<Tile> callback)
     {
         cbTileTypeChanged -= callback;
+    }
+
+    public bool InstallObject(InstalledObject obj)
+    {
+        if (_installedObject != null)
+        {
+            Debug.LogError("InstallObject - Tried to assign an installed object to a tile that already has one!");
+            return false;
+        }
+
+        _installedObject = obj;
+        return true;
     }
 }

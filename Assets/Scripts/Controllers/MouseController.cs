@@ -23,7 +23,9 @@ public class MouseController : MonoBehaviour
     private Vector3 _dragStartPosition;
     private List<GameObject> _dragPreviewGameObjects;
 
-    private Tile.TileType _buildModeTile = Tile.TileType.Floor;
+    private TileType _buildModeTile = TileType.Floor;
+    private string _buildModeObjectType;
+    private bool _buildModeIsObjects = false;
 
     void Start()
     {
@@ -44,14 +46,22 @@ public class MouseController : MonoBehaviour
     }
 
 
+    public void SetMode_BuildInstalledObject(string objectType)
+    {
+        _buildModeIsObjects = true;
+        _buildModeObjectType = objectType;
+    }
+
     public void SetMode_BuildFloor()
     {
-        _buildModeTile = Tile.TileType.Floor;
+        _buildModeIsObjects = false;
+        _buildModeTile = TileType.Floor;
     }
 
     public void SetMode_Bulldoze()
     {
-        _buildModeTile = Tile.TileType.Empty;
+        _buildModeIsObjects = false;
+        _buildModeTile = TileType.Empty;
     }
 
 
@@ -94,7 +104,17 @@ public class MouseController : MonoBehaviour
         // End drag
         if (Input.GetMouseButtonUp(0))
         {
-            DoActionOnSelectedTiles((tile) => { tile.Type = _buildModeTile; });
+            DoActionOnSelectedTiles((tile) =>
+                {
+                    if (_buildModeIsObjects)
+                    {
+                        //WorldController.Instance.WorldData.PlaceInstalledObject(_buildModeObjectType);
+                    }
+                    else
+                    {
+                        tile.Type = _buildModeTile;
+                    }
+                });
         }
     }
 
