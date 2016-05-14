@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
-using System.Collections;
+using UnityEngine.EventSystems;
 using System.Collections.Generic;
 using System;
 
@@ -23,6 +23,7 @@ public class MouseController : MonoBehaviour
     private Vector3 _dragStartPosition;
     private List<GameObject> _dragPreviewGameObjects;
 
+    private Tile.TileType _buildModeTile = Tile.TileType.Floor;
 
     void Start()
     {
@@ -42,15 +43,32 @@ public class MouseController : MonoBehaviour
         _lastMousePosition = GetCurrentMousePosition();
     }
 
+
+    public void SetMode_BuildFloor()
+    {
+        _buildModeTile = Tile.TileType.Floor;
+    }
+
+    public void SetMode_Bulldoze()
+    {
+        _buildModeTile = Tile.TileType.Empty;
+    }
+
+
     private void UpdateDragSelect()
     {
+        if (EventSystem.current.IsPointerOverGameObject())
+        {
+            return;
+        }
+
         // Start Drag
         if (Input.GetMouseButtonDown(0))
         {
             _dragStartPosition = GetNormalizedMousePosition();
         }
 
-        // If we the mouse hasn't moved, no reason to do any actual drag-based code
+        // If the mouse hasn't moved, no reason to do any actual drag-based code
         if (_dragStartPosition != _lastMousePosition)
         {
             // Cleanup old drag previews
@@ -76,7 +94,7 @@ public class MouseController : MonoBehaviour
         // End drag
         if (Input.GetMouseButtonUp(0))
         {
-            DoActionOnSelectedTiles((tile) => { tile.Type = Tile.TileType.Floor; });
+            DoActionOnSelectedTiles((tile) => { tile.Type = _buildModeTile; });
         }
     }
 

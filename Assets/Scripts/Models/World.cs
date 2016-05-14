@@ -34,7 +34,6 @@ public class World
     {
         if (x < 0 || x >= _width || y < 0 || y >= _height)
         {
-            Debug.LogWarning("Tile (" + x + ", " + y + ") is out of range.");
             return null;
         }
 
