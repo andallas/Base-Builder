@@ -8,16 +8,17 @@ public class MouseController : MonoBehaviour
 {
     public GameObject circleCursorPrefab;
 
-    private float fastSpeedMultiplier = 2;
-    private float keyScrollSpeed = 2;
+    private float _fastSpeedMultiplier = 2;
+    private float _keyScrollSpeed = 2;
 
-    private float zoomSpeed = 1f;
-    private float zoomMax = 5f;
-    private float zoomMin = 15f;
-    float targetZoom = 5f;
-    float zoomDuration = 1.0f;
-    float zoomElapsed = 0.0f;
-    bool zoomTransition = false;
+    private float _zoomSpeed = 1f;
+    private float _zoomMax = 5f;
+    private float _zoomMin = 15f;
+
+    private float _targetZoom = 5f;
+    private float _zoomDuration = 1.0f;
+    private float _zoomElapsed = 0.0f;
+    private bool _zoomTransition = false;
 
     private Vector3 _lastMousePosition;
     private Vector3 _dragStartPosition;
@@ -26,6 +27,7 @@ public class MouseController : MonoBehaviour
     private TileType _buildModeTile = TileType.Floor;
     private string _buildModeObjectType;
     private bool _buildModeIsObjects = false;
+
 
     void Start()
     {
@@ -108,7 +110,7 @@ public class MouseController : MonoBehaviour
                 {
                     if (_buildModeIsObjects)
                     {
-                        //WorldController.Instance.WorldData.PlaceInstalledObject(_buildModeObjectType);
+                        WorldController.Instance.WorldData.PlaceFurniture(_buildModeObjectType, tile);
                     }
                     else
                     {
@@ -125,44 +127,44 @@ public class MouseController : MonoBehaviour
 
         if (Input.GetKey(KeyCode.LeftShift))
         {
-            Camera.main.transform.Translate(translationX * fastSpeedMultiplier * keyScrollSpeed, translationY * fastSpeedMultiplier * keyScrollSpeed, 0);
+            Camera.main.transform.Translate(translationX * _fastSpeedMultiplier * _keyScrollSpeed, translationY * _fastSpeedMultiplier * _keyScrollSpeed, 0);
         }
         else
         {
-            Camera.main.transform.Translate(translationX * keyScrollSpeed, translationY * keyScrollSpeed, 0);
+            Camera.main.transform.Translate(translationX * _keyScrollSpeed, translationY * _keyScrollSpeed, 0);
         }
     }
 
     private void UpdateZoom()
     {
-        if (Input.GetAxis("Mouse ScrollWheel") > 0 && Camera.main.orthographicSize > zoomMax) // Zoom in
+        if (Input.GetAxis("Mouse ScrollWheel") > 0 && Camera.main.orthographicSize > _zoomMax) // Zoom in
         {
-            targetZoom -= zoomSpeed;
-            zoomTransition = true;
-            zoomElapsed = 0.0f;
+            _targetZoom -= _zoomSpeed;
+            _zoomTransition = true;
+            _zoomElapsed = 0.0f;
         }
 
-        if (Input.GetAxis("Mouse ScrollWheel") < 0 && Camera.main.orthographicSize < zoomMin) // Zoom out
+        if (Input.GetAxis("Mouse ScrollWheel") < 0 && Camera.main.orthographicSize < _zoomMin) // Zoom out
         {
-            targetZoom += zoomSpeed;
-            zoomTransition = true;
-            zoomElapsed = 0.0f;
+            _targetZoom += _zoomSpeed;
+            _zoomTransition = true;
+            _zoomElapsed = 0.0f;
         }
 
-        if (zoomTransition)
+        if (_zoomTransition)
         {
-            zoomElapsed += Time.deltaTime / zoomDuration;
+            _zoomElapsed += Time.deltaTime / _zoomDuration;
 
             float currentOrtho = Camera.main.orthographicSize;
-            currentOrtho = Mathf.Lerp(currentOrtho, targetZoom, zoomElapsed);
-            currentOrtho = (currentOrtho > zoomMin) ? zoomMin : (currentOrtho < zoomMax) ? zoomMax : currentOrtho;
+            currentOrtho = Mathf.Lerp(currentOrtho, _targetZoom, _zoomElapsed);
+            currentOrtho = (currentOrtho > _zoomMin) ? _zoomMin : (currentOrtho < _zoomMax) ? _zoomMax : currentOrtho;
             Camera.main.orthographicSize = currentOrtho;
             
-            if (zoomElapsed > 1.0f)
+            if (_zoomElapsed > 1.0f)
             {
-                targetZoom = Camera.main.orthographicSize;
-                zoomTransition = false;
-                zoomElapsed = 0.0f;
+                _targetZoom = Camera.main.orthographicSize;
+                _zoomTransition = false;
+                _zoomElapsed = 0.0f;
             }
         }
     }

@@ -15,61 +15,50 @@ public class Tile
             if (_type != value)
             {
                 _type = value;
-                if (cbTileTypeChanged != null)
+                if (cbOnTileTypeChanged != null)
                 {
-                    cbTileTypeChanged(this);
+                    cbOnTileTypeChanged(this);
                 }
             }
         }
     }
 
-    private int _x;
-    public int X
-    {
-        get { return _x; }
-        protected set { _x = value; }
-    }
-
-    private int _y;
-    public int Y
-    {
-        get { return _y; }
-        protected set { _y = value; }
-    }
+    public int X { get; protected set; }
+    public int Y { get; protected set; }
 
 
-    private LooseObject _looseObject;
-    private InstalledObject _installedObject;
+    public LooseObject LooseObject { get; protected set; }
+    public Furniture Furniture { get; protected set; }
     private World _world;
-    private Action<Tile> cbTileTypeChanged;
+    private Action<Tile> cbOnTileTypeChanged;
 
 
     public Tile(World world, int x, int y)
     {
         _world = world;
-        _x = x;
-        _y = y;
+        X = x;
+        Y = y;
     }
 
-    public void RegisterTileTypeChangedCallback(Action<Tile> callback)
+    public void RegisterOnTileTypeChangedCallback(Action<Tile> callback)
     {
-        cbTileTypeChanged += callback;
+        cbOnTileTypeChanged += callback;
     }
 
-    public void UnregisterTileTypeChangedCallback(Action<Tile> callback)
+    public void UnregisterOnTileTypeChangedCallback(Action<Tile> callback)
     {
-        cbTileTypeChanged -= callback;
+        cbOnTileTypeChanged -= callback;
     }
 
-    public bool InstallObject(InstalledObject obj)
+    public bool InstallObject(Furniture obj)
     {
-        if (_installedObject != null)
+        if (Furniture != null)
         {
-            Debug.LogError("InstallObject - Tried to assign an installed object to a tile that already has one!");
+            // Tried to assign furniture to a tile that already has one!
             return false;
         }
 
-        _installedObject = obj;
+        Furniture = obj;
         return true;
     }
 }

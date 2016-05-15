@@ -1,77 +1,111 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
+using System;
 
 
 public class World
 {
-    private Tile[,] _tiles;
-    public Tile[,] Tiles { get { return _tiles; } }
+    public Tile[,] Tiles { get; protected set; }
+    public int Width { get; protected set; }
+    public int Height { get; protected set; }
 
-    private int _width;
-    public int Width { get { return _width; } }
+    private Dictionary<string, Furniture> _furniturePrototypes;
 
-    private int _height;
-    public int Height { get { return _height; } }
-
-    private Dictionary<string, InstalledObject> _installedObjectPrototypes;
+    private Action<Furniture> cbOnFurniturePlaced;
 
 
     public World(int width = 100, int height = 100)
     {
-        _width = width;
-        _height = height;
+        Width = width;
+        Height = height;
 
-        _tiles = new Tile[_width, _height];
+        Tiles = new Tile[Width, Height];
 
-        for (int x = 0; x < _width; x++)
+        for (int x = 0; x < Width; x++)
         {
-            for (int y = 0; y < _height; y++)
+            for (int y = 0; y < Height; y++)
             {
-                _tiles[x, y] = new Tile(this, x, y);
+                Tiles[x, y] = new Tile(this, x, y);
             }
         }
 
-        Debug.Log("World created with " + (_width * _height) + " tiles.");
+        Debug.Log("World created with " + (Width * Height) + " tiles.");
 
-        CreateInstalledObjectPrototypes();
+        CreateFurniturePrototypes();
     }
 
     public Tile GetTileAt(int x, int y)
     {
-        if (x < 0 || x >= _width || y < 0 || y >= _height)
+        if (x < 0 || x >= Width || y < 0 || y >= Height)
         {
             return null;
         }
 
-        return _tiles[x, y];
+        return Tiles[x, y];
     }
 
     public void RandomizeTiles()
     {
         Debug.Log("RandomizeTiles");
 
-        for (int x = 0; x < _width; x++)
+        for (int x = 0; x < Width; x++)
         {
-            for (int y = 0; y < _height; y++)
+            for (int y = 0; y < Height; y++)
             {
-                int val = Random.Range(0, 2);
+                int val = UnityEngine.Random.Range(0, 2);
 
                 if (val == 0)
                 {
-                    _tiles[x, y].Type = TileType.Empty;
+                    Tiles[x, y].Type = TileType.Empty;
                 }
                 else
                 {
-                    _tiles[x, y].Type = TileType.Floor;
+                    Tiles[x, y].Type = TileType.Floor;
                 }
             }
         }
     }
 
-
-    private void CreateInstalledObjectPrototypes()
+    public void PlaceFurniture(string objectType, Tile tile)
     {
-        _installedObjectPrototypes = new Dictionary<string, InstalledObject>();
-        _installedObjectPrototypes.Add("Wall", InstalledObject.CreatePrototype("Wall", 0));
+        // TODO: This assumes 1x1 tiles with no rotation
+        if (!_furniturePrototypes.ContainsKey(objectType))
+        {
+            Debug.LogError("PlaceFurniture - Unable to place furniture, key doesn't exists!");
+            return;
+        }
+
+        Furniture obj = Furniture.PlaceFurnitureInstance(_furniturePrototypes[objectType], tile);
+
+        if (obj == null)
+        {
+            return;
+        }
+
+        if (cbOnFurniturePlaced != null)
+        {
+            cbOnFurniturePlaced(obj);
+        }
+    }
+
+    public void RegisterOnFurniturePlaced(Action<Furniture> callback)
+    {
+        cbOnFurniturePlaced += callback;
+    }
+
+    public void UnregisterOnFurniturePlaced(Action<Furniture> callback)
+    {
+        cbOnFurniturePlaced -= callback;
+    }
+
+
+    private void CreateFurniturePrototypes()
+    {
+        _furniturePrototypes = new Dictionary<string, Furniture>();
+        _furniturePrototypes.Add("Wall", Furniture.CreatePrototype( furnitureType: "Wall",
+                                                                    movementCost: 0,
+                                                                    width: 1,
+                                                                    height: 1,
+                                                                    linksToNeighbor: true));
     }
 }
