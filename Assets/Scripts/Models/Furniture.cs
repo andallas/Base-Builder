@@ -55,6 +55,37 @@ public class Furniture
             return null;
         }
 
+        if (furniture.LinksToNeighbor)
+        {
+            int x = tile.X;
+            int y = tile.Y;
+
+            Tile t;
+            t = tile.World.GetTileAt(x, y + 1);
+            if (t != null && t.Furniture != null && t.Furniture.Type == furniture.Type)
+            {
+                t.Furniture.cbOnChanged(t.Furniture);
+            }
+
+            t = tile.World.GetTileAt(x + 1, y);
+            if (t != null && t.Furniture != null && t.Furniture.Type == furniture.Type)
+            {
+                t.Furniture.cbOnChanged(t.Furniture);
+            }
+
+            t = tile.World.GetTileAt(x, y - 1);
+            if (t != null && t.Furniture != null && t.Furniture.Type == furniture.Type)
+            {
+                t.Furniture.cbOnChanged(t.Furniture);
+            }
+
+            t = tile.World.GetTileAt(x - 1, y);
+            if (t != null && t.Furniture != null && t.Furniture.Type == furniture.Type)
+            {
+                t.Furniture.cbOnChanged(t.Furniture);
+            }
+        }
+
         return furniture;
     }
 

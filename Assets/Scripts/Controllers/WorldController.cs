@@ -18,20 +18,13 @@ public class WorldController : MonoBehaviour
 
     void Start()
     {
-        // Sprite loading
-        furnitureSprites = new Dictionary<string, Sprite>();
-        Sprite[] sprites = Resources.LoadAll<Sprite>("Images/Furniture/Wall");
-
-        foreach (Sprite s in sprites)
-        {
-            furnitureSprites[s.name] = s;
-        }
-        
         if (Instance != null)
         {
             Debug.LogWarning("Found extra world controller.");
         }
         Instance = this;
+
+        LoadSprites();
 
         WorldData = new World();
         WorldData.RegisterOnFurniturePlaced(OnFurniturePlaced);
@@ -62,6 +55,18 @@ public class WorldController : MonoBehaviour
 
     void Update() { }
 
+    private void LoadSprites()
+    {
+        furnitureSprites = new Dictionary<string, Sprite>();
+        Sprite[] sprites = Resources.LoadAll<Sprite>("Images/Furniture/");
+
+        Debug.Log("Loading resources:");
+        foreach (Sprite s in sprites)
+        {
+            Debug.Log(s);
+            furnitureSprites[s.name] = s;
+        }
+    }
 
     private void DestroyAllTileGameObjects()
     {
@@ -134,11 +139,22 @@ public class WorldController : MonoBehaviour
         furniture.RegisterOnChangedCallback(OnFurnitureChanged);
     }
 
-    public void OnFurnitureChanged(Furniture obj)
+    private void OnFurnitureChanged(Furniture furniture)
     {
-        Debug.Log("OnFurnitureChanged!");
+        // TODO: Make sure the furnitures graphics have been updated
+        if (!furnitureGameObjectMap.ContainsKey(furniture))
+        {
+            Debug.LogError("OnFurnitureChanged - trying to change visuals for furniture, not found in map.");
+            return;
+        }
+        GameObject furniture_go = furnitureGameObjectMap[furniture];
+        SpriteRenderer spriteRenderer = furniture_go.GetComponent<SpriteRenderer>();
+        if (spriteRenderer == null)
+        {
+            spriteRenderer = furniture_go.AddComponent<SpriteRenderer>();
+        }
+        spriteRenderer.sprite = GetSpriteForFurniture(furniture);
     }
-
 
     private Sprite GetSpriteForFurniture(Furniture furniture)
     {

@@ -29,13 +29,13 @@ public class Tile
 
     public Inventory Inventory { get; protected set; }
     public Furniture Furniture { get; protected set; }
-    private World _world;
+    public World World { get; protected set; }
     private Action<Tile> cbOnTileTypeChanged;
 
 
     public Tile(World world, int x, int y)
     {
-        _world = world;
+        World = world;
         X = x;
         Y = y;
     }
