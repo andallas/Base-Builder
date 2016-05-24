@@ -27,7 +27,7 @@ public class Tile
     public int Y { get; protected set; }
 
 
-    public LooseObject LooseObject { get; protected set; }
+    public Inventory Inventory { get; protected set; }
     public Furniture Furniture { get; protected set; }
     private World _world;
     private Action<Tile> cbOnTileTypeChanged;
@@ -50,7 +50,7 @@ public class Tile
         cbOnTileTypeChanged -= callback;
     }
 
-    public bool InstallObject(Furniture obj)
+    public bool InstallFurniture(Furniture furniture)
     {
         if (Furniture != null)
         {
@@ -58,7 +58,7 @@ public class Tile
             return false;
         }
 
-        Furniture = obj;
+        Furniture = furniture;
         return true;
     }
 }

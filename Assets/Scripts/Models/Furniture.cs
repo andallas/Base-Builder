@@ -30,11 +30,11 @@ public class Furniture
     {
         Furniture furniture = new Furniture();
 
-        furniture.Type   = furnitureType;
-        furniture.MovementCost    = movementCost;
-        furniture.Width           = width;
-        furniture.Height          = height;
-        furniture.LinksToNeighbor = linksToNeighbor;
+        furniture.Type              = furnitureType;
+        furniture.MovementCost      = movementCost;
+        furniture.Width             = width;
+        furniture.Height            = height;
+        furniture.LinksToNeighbor   = linksToNeighbor;
 
         return furniture;
     }
@@ -43,14 +43,14 @@ public class Furniture
     {
         Furniture furniture = new Furniture();
 
-        furniture.Type   = proto.Type;
-        furniture.MovementCost    = proto.MovementCost;
-        furniture.Width           = proto.Width;
-        furniture.Height          = proto.Height;
-        furniture.LinksToNeighbor = proto.LinksToNeighbor;
+        furniture.Type              = proto.Type;
+        furniture.MovementCost      = proto.MovementCost;
+        furniture.Width             = proto.Width;
+        furniture.Height            = proto.Height;
+        furniture.LinksToNeighbor   = proto.LinksToNeighbor;
         furniture.Tile = tile;
 
-        if (!tile.InstallObject(furniture))
+        if (!tile.InstallFurniture(furniture))
         {
             return null;
         }

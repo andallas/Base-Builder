@@ -66,25 +66,25 @@ public class World
         }
     }
 
-    public void PlaceFurniture(string objectType, Tile tile)
+    public void PlaceFurniture(string furnitureType, Tile tile)
     {
         // TODO: This assumes 1x1 tiles with no rotation
-        if (!_furniturePrototypes.ContainsKey(objectType))
+        if (!_furniturePrototypes.ContainsKey(furnitureType))
         {
             Debug.LogError("PlaceFurniture - Unable to place furniture, key doesn't exists!");
             return;
         }
 
-        Furniture obj = Furniture.PlaceFurnitureInstance(_furniturePrototypes[objectType], tile);
+        Furniture furniture = Furniture.PlaceFurnitureInstance(_furniturePrototypes[furnitureType], tile);
 
-        if (obj == null)
+        if (furniture == null)
         {
             return;
         }
 
         if (cbOnFurniturePlaced != null)
         {
-            cbOnFurniturePlaced(obj);
+            cbOnFurniturePlaced(furniture);
         }
     }
 
