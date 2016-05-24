@@ -10,6 +10,7 @@ public class WorldController : MonoBehaviour
 
     // TODO: Use a key/value pair of sprites, keyed on Tile.TileType
     public Sprite floorSprite;
+    public Sprite emptySprite;
     public Dictionary<string, Sprite> furnitureSprites;
 
     private Dictionary<Tile, GameObject> tileGameObjectMap;
@@ -42,7 +43,8 @@ public class WorldController : MonoBehaviour
                 tile_go.name = "Tile_" + x + "_" + y;
                 tile_go.transform.position = new Vector3(tile_data.X, tile_data.Y, 0);
                 tile_go.transform.SetParent(this.transform, true);
-                tile_go.AddComponent<SpriteRenderer>();
+                tile_go.AddComponent<SpriteRenderer>().sprite = emptySprite;
+                
 
                 tileGameObjectMap[tile_data] = tile_go;
 
@@ -50,7 +52,7 @@ public class WorldController : MonoBehaviour
             }
         }
 
-        WorldData.RandomizeTiles();
+        Camera.main.transform.position = new Vector3(WorldData.Width / 2, WorldData.Height / 2, Camera.main.transform.position.z);
 	}
 
     void Update() { }

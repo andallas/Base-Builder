@@ -14,6 +14,8 @@ public class Furniture
 
     private Action<Furniture> cbOnChanged;
 
+    private Func<Tile, bool> funcPositionValidation;
+
 
     // TODO: Implement larger objects
     // TODO: Implement object rotation
@@ -36,11 +38,19 @@ public class Furniture
         furniture.Height            = height;
         furniture.LinksToNeighbor   = linksToNeighbor;
 
+        furniture.funcPositionValidation = furniture.IsValidPosition;
+
         return furniture;
     }
 
     static public Furniture PlaceFurnitureInstance(Furniture proto, Tile tile)
     {
+        if (!proto.funcPositionValidation(tile))
+        {
+            Debug.LogError("PlaceFurnitureInstance - Position is invalid");
+            return null;
+        }
+
         Furniture furniture = new Furniture();
 
         furniture.Type              = proto.Type;
@@ -98,5 +108,30 @@ public class Furniture
     public void UnregisterOnChangedCallback(Action<Furniture> callback)
     {
         cbOnChanged -= callback;
+    }
+
+    public bool IsValidPosition(Tile tile)
+    {
+        if (tile.Type != TileType.Floor)
+        {
+            return false;
+        }
+
+        if (tile.Furniture != null)
+        {
+            return false;
+        }
+        return true;
+    }
+
+    public bool IsValidPosition_Door(Tile tile)
+    {
+        if (!IsValidPosition(tile))
+        {
+            return false;
+        }
+
+        // TODO: Check tile has E/W or N/S walls
+        return true;
     }
 }

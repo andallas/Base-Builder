@@ -50,7 +50,7 @@ public class Tile
         cbOnTileTypeChanged -= callback;
     }
 
-    public bool InstallFurniture(Furniture furniture)
+    public bool InstallFurniture(Furniture furnitureInstance)
     {
         if (Furniture != null)
         {
@@ -58,7 +58,7 @@ public class Tile
             return false;
         }
 
-        Furniture = furniture;
+        Furniture = furnitureInstance;
         return true;
     }
 }
