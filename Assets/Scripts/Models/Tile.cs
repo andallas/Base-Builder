@@ -15,9 +15,9 @@ public class Tile
             if (_type != value)
             {
                 _type = value;
-                if (cbOnTileTypeChanged != null)
+                if (cbOnTileChanged != null)
                 {
-                    cbOnTileTypeChanged(this);
+                    cbOnTileChanged(this);
                 }
             }
         }
@@ -25,12 +25,11 @@ public class Tile
 
     public int X { get; protected set; }
     public int Y { get; protected set; }
-
-
     public Inventory Inventory { get; protected set; }
     public Furniture Furniture { get; protected set; }
     public World World { get; protected set; }
-    private Action<Tile> cbOnTileTypeChanged;
+
+    private Action<Tile> cbOnTileChanged;
 
 
     public Tile(World world, int x, int y)
@@ -40,14 +39,14 @@ public class Tile
         Y = y;
     }
 
-    public void RegisterOnTileTypeChangedCallback(Action<Tile> callback)
+    public void RegisterOnTileChangedCallback(Action<Tile> callback)
     {
-        cbOnTileTypeChanged += callback;
+        cbOnTileChanged += callback;
     }
 
-    public void UnregisterOnTileTypeChangedCallback(Action<Tile> callback)
+    public void UnregisterOnTileChangedCallback(Action<Tile> callback)
     {
-        cbOnTileTypeChanged -= callback;
+        cbOnTileChanged -= callback;
     }
 
     public bool InstallFurniture(Furniture furnitureInstance)

@@ -12,6 +12,7 @@ public class World
     private Dictionary<string, Furniture> _furniturePrototypes;
 
     private Action<Furniture> cbOnFurniturePlaced;
+    private Action<Tile> cbOnTileChanged;
 
 
     public World(int width = 100, int height = 100)
@@ -26,6 +27,7 @@ public class World
             for (int y = 0; y < Height; y++)
             {
                 Tiles[x, y] = new Tile(this, x, y);
+                Tiles[x, y].RegisterOnTileChangedCallback(OnTileChanged);
             }
         }
 
@@ -98,6 +100,25 @@ public class World
         cbOnFurniturePlaced -= callback;
     }
 
+    public void RegisterOnTileChanged(Action<Tile> callback)
+    {
+        cbOnTileChanged += callback;
+    }
+
+    public void UnregisterOnTileChanged(Action<Tile> callback)
+    {
+        cbOnTileChanged -= callback;
+    }
+
+    
+    private void OnTileChanged(Tile tile)
+    {
+        if (cbOnTileChanged == null)
+        {
+            return;
+        }
+        cbOnTileChanged(tile);
+    }
 
     private void CreateFurniturePrototypes()
     {

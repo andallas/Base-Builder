@@ -17,7 +17,7 @@ public class WorldController : MonoBehaviour
     private Dictionary<Furniture, GameObject> furnitureGameObjectMap;
 
 
-    void Start()
+    void OnEnable()
     {
         if (Instance != null)
         {
@@ -45,12 +45,11 @@ public class WorldController : MonoBehaviour
                 tile_go.transform.SetParent(this.transform, true);
                 tile_go.AddComponent<SpriteRenderer>().sprite = emptySprite;
                 
-
                 tileGameObjectMap[tile_data] = tile_go;
-
-                tile_data.RegisterOnTileTypeChangedCallback(OnTileTypeChanged);
             }
         }
+
+        WorldData.RegisterOnTileChanged(OnTileChanged);
 
         Camera.main.transform.position = new Vector3(WorldData.Width / 2, WorldData.Height / 2, Camera.main.transform.position.z);
 	}
@@ -78,16 +77,16 @@ public class WorldController : MonoBehaviour
             GameObject tile_go = tileGameObjectMap[tile_data];
 
             tileGameObjectMap.Remove(tile_data);
-            tile_data.UnregisterOnTileTypeChangedCallback(OnTileTypeChanged);
+            tile_data.UnregisterOnTileChangedCallback(OnTileChanged);
             Destroy(tile_go);
         }
     }
 
-    private void OnTileTypeChanged(Tile tile_data)
+    private void OnTileChanged(Tile tile_data)
     {
         if (!tileGameObjectMap.ContainsKey(tile_data))
         {
-            Debug.LogError("OnTileTypeChanged - tile_data not found!");
+            Debug.LogError("OnTileChanged - tile_data not found!");
             return;
         }
 
@@ -95,7 +94,7 @@ public class WorldController : MonoBehaviour
 
         if (tile_go == null)
         {
-            Debug.LogError("OnTileTypeChanged - tile_go is null!");
+            Debug.LogError("OnTileChanged - tile_go is null!");
             return;
         }
 
@@ -110,7 +109,7 @@ public class WorldController : MonoBehaviour
         }
         else
         {
-            Debug.LogError("OnTileTypeChanged - Unrecognized tile type.");
+            Debug.LogError("OnTileChanged - Unrecognized tile type.");
         }
     }
 
