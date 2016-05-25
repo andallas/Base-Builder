@@ -110,7 +110,14 @@ public class MouseController : MonoBehaviour
                 {
                     if (_buildModeIsObjects)
                     {
-                        WorldController.Instance.WorldData.PlaceFurniture(_buildModeObjectType, tile);
+                        string furnitureType = _buildModeObjectType;
+
+                        Job job = new Job(tile, (j) =>
+                            {
+                                WorldController.Instance.WorldData.PlaceFurniture(furnitureType, j.Tile);
+                            });
+
+                        WorldController.Instance.WorldData.jobQueue.Enqueue(job);
                     }
                     else
                     {

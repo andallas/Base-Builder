@@ -14,9 +14,16 @@ public class World
     private Action<Furniture> cbOnFurniturePlaced;
     private Action<Tile> cbOnTileChanged;
 
+    // TODO: Replace with a dedicated class for managing job queues
+    //       that might also be semi-static, self-initializing, etc...
+    //       For now this is just a public member of World
+    public Queue<Job> jobQueue;
+
 
     public World(int width = 100, int height = 100)
     {
+        jobQueue = new Queue<Job>();
+
         Width = width;
         Height = height;
 
@@ -35,6 +42,7 @@ public class World
 
         CreateFurniturePrototypes();
     }
+
 
     public Tile GetTileAt(int x, int y)
     {
