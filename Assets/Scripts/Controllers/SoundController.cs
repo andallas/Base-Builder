@@ -7,8 +7,8 @@ public class SoundController : MonoBehaviour
 
     void Start()
     {
-        WorldController.Instance.WorldData.RegisterOnFurniturePlaced(OnFurniturePlaced);
-        WorldController.Instance.WorldData.RegisterOnTileChanged(OnTileChanged);
+        WorldController.WorldData.RegisterOnFurniturePlaced(OnFurniturePlaced);
+        WorldController.WorldData.RegisterOnTileChanged(OnTileChanged);
     }
 
     void Update()

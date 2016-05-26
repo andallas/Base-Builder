@@ -24,10 +24,6 @@ public class MouseController : MonoBehaviour
     private Vector3 _dragStartPosition;
     private List<GameObject> _dragPreviewGameObjects;
 
-    private TileType _buildModeTile = TileType.Floor;
-    private string _buildModeObjectType;
-    private bool _buildModeIsObjects = false;
-
 
     void Start()
     {
@@ -45,25 +41,6 @@ public class MouseController : MonoBehaviour
         UpdateScreenDrag();
 
         _lastMousePosition = GetCurrentMousePosition();
-    }
-
-
-    public void SetMode_BuildInstalledObject(string objectType)
-    {
-        _buildModeIsObjects = true;
-        _buildModeObjectType = objectType;
-    }
-
-    public void SetMode_BuildFloor()
-    {
-        _buildModeIsObjects = false;
-        _buildModeTile = TileType.Floor;
-    }
-
-    public void SetMode_Bulldoze()
-    {
-        _buildModeIsObjects = false;
-        _buildModeTile = TileType.Empty;
     }
 
 
@@ -106,40 +83,11 @@ public class MouseController : MonoBehaviour
         // End drag
         if (Input.GetMouseButtonUp(0))
         {
+            BuildModeController bmc = GameObject.FindObjectOfType<BuildModeController>();
+
             DoActionOnSelectedTiles((tile) =>
                 {
-                    if (_buildModeIsObjects)
-                    {
-                        string furnitureType = _buildModeObjectType;
-
-                        if (WorldController.Instance.WorldData.IsFurniturePlacementValid(furnitureType, tile) &&
-                            tile.PendingFurnitureJob == null)
-                        {
-                            Job job = new Job(tile, (j) =>
-                                {
-                                    WorldController.Instance.WorldData.PlaceFurniture(furnitureType, j.Tile);
-                                    // TODO: I don't like having to manually and explicitly set flags that
-                                    //       prevent conflicts. It's too easy to forget to set/clear them!
-                                    tile.PendingFurnitureJob = null;
-                                });
-
-                            // TODO: I don't like having to manually and explicitly set flags that
-                            //       prevent conflicts. It's too easy to forget to set/clear them!
-                            tile.PendingFurnitureJob = job;
-
-                            job.RegisterJobCancelCallback((theJob) =>
-                                {
-                                    theJob.Tile.PendingFurnitureJob = null;
-                                });
-
-                            WorldController.Instance.WorldData.jobQueue.Enqueue(job);
-                            Debug.Log("Job Queue Size: " + WorldController.Instance.WorldData.jobQueue.Count);
-                        }
-                    }
-                    else
-                    {
-                        tile.Type = _buildModeTile;
-                    }
+                    bmc.DoBuild(tile);
                 });
         }
     }
@@ -215,11 +163,13 @@ public class MouseController : MonoBehaviour
         if (end_x < start_x) { SwapInts(ref start_x, ref end_x); }
         if (end_y < start_y) { SwapInts(ref start_y, ref end_y); }
 
+        World world = WorldController.WorldData;
+
         for (int x = start_x; x <= end_x; x++)
         {
             for (int y = start_y; y <= end_y; y++)
             {
-                Tile tile = WorldController.Instance.WorldData.GetTileAt(x, y);
+                Tile tile = world.GetTileAt(x, y);
                 if (tile != null)
                 {
                     action(tile);
