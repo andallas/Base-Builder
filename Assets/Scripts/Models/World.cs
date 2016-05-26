@@ -137,4 +137,15 @@ public class World
                                                                     height: 1,
                                                                     linksToNeighbor: true));
     }
+
+    public bool IsFurniturePlacementValid(string furnitureType, Tile tile)
+    {
+        bool result = false;
+        if (_furniturePrototypes.ContainsKey(furnitureType))
+        {
+            result = _furniturePrototypes[furnitureType].IsValidPosition(tile);
+        }
+
+        return result;
+    }
 }

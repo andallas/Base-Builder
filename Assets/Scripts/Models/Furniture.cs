@@ -38,7 +38,7 @@ public class Furniture
         furniture.Height            = height;
         furniture.LinksToNeighbor   = linksToNeighbor;
 
-        furniture.funcPositionValidation = furniture.IsValidPosition;
+        furniture.funcPositionValidation = furniture.IsValidPosition_Base;
 
         return furniture;
     }
@@ -112,6 +112,11 @@ public class Furniture
 
     public bool IsValidPosition(Tile tile)
     {
+        return funcPositionValidation(tile);
+    }
+
+    private bool IsValidPosition_Base(Tile tile)
+    {
         if (tile.Type != TileType.Floor)
         {
             return false;
@@ -124,9 +129,9 @@ public class Furniture
         return true;
     }
 
-    public bool IsValidPosition_Door(Tile tile)
+    private bool IsValidPosition_Door(Tile tile)
     {
-        if (!IsValidPosition(tile))
+        if (!IsValidPosition_Base(tile))
         {
             return false;
         }

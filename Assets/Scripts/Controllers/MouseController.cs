@@ -112,12 +112,29 @@ public class MouseController : MonoBehaviour
                     {
                         string furnitureType = _buildModeObjectType;
 
-                        Job job = new Job(tile, (j) =>
-                            {
-                                WorldController.Instance.WorldData.PlaceFurniture(furnitureType, j.Tile);
-                            });
+                        if (WorldController.Instance.WorldData.IsFurniturePlacementValid(furnitureType, tile) &&
+                            tile.PendingFurnitureJob == null)
+                        {
+                            Job job = new Job(tile, (j) =>
+                                {
+                                    WorldController.Instance.WorldData.PlaceFurniture(furnitureType, j.Tile);
+                                    // TODO: I don't like having to manually and explicitly set flags that
+                                    //       prevent conflicts. It's too easy to forget to set/clear them!
+                                    tile.PendingFurnitureJob = null;
+                                });
 
-                        WorldController.Instance.WorldData.jobQueue.Enqueue(job);
+                            // TODO: I don't like having to manually and explicitly set flags that
+                            //       prevent conflicts. It's too easy to forget to set/clear them!
+                            tile.PendingFurnitureJob = job;
+
+                            job.RegisterJobCancelCallback((theJob) =>
+                                {
+                                    theJob.Tile.PendingFurnitureJob = null;
+                                });
+
+                            WorldController.Instance.WorldData.jobQueue.Enqueue(job);
+                            Debug.Log("Job Queue Size: " + WorldController.Instance.WorldData.jobQueue.Count);
+                        }
                     }
                     else
                     {

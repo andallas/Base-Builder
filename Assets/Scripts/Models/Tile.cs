@@ -28,6 +28,7 @@ public class Tile
     public Inventory Inventory { get; protected set; }
     public Furniture Furniture { get; protected set; }
     public World World { get; protected set; }
+    public Job PendingFurnitureJob { get; set; }
 
     private Action<Tile> cbOnTileChanged;
 
