@@ -24,7 +24,7 @@ public class JobSpriteController : MonoBehaviour
 
     private void OnJobCreated(Job job)
     {
-        // TODO: We can only do furniture-building jobs.
+        // TODO: We can only do character-building jobs.
 
         int x = job.Tile.X;
         int y = job.Tile.Y;
@@ -37,6 +37,7 @@ public class JobSpriteController : MonoBehaviour
         SpriteRenderer job_sr = job_go.AddComponent<SpriteRenderer>();
         job_sr.sprite = fsc.GetSpriteForFurniture(job.JobObjectType);
         job_sr.color = new Color(0.5f, 1f, 0.5f, 0.25f);
+        job_sr.sortingLayerName = "Jobs";
 
         jobGameObjectMap.Add(job, job_go);
 
@@ -46,7 +47,7 @@ public class JobSpriteController : MonoBehaviour
 
     private void OnJobEnded(Job job)
     {
-        // TODO: We can only do furniture-building jobs.
+        // TODO: We can only do character-building jobs.
         job.UnregisterJobCompleteCallback(OnJobEnded);
         job.UnregisterJobCancelCallback(OnJobEnded);
 

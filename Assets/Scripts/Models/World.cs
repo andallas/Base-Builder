@@ -9,10 +9,12 @@ public class World
     public int Width { get; protected set; }
     public int Height { get; protected set; }
 
+    private List<Character> characters;
     private Dictionary<string, Furniture> _furniturePrototypes;
 
     private Action<Furniture> cbOnFurniturePlaced;
     private Action<Tile> cbOnTileChanged;
+    private Action<Character> cbOnCharacterCreated;
 
 
     public JobQueue jobQueue;
@@ -36,11 +38,22 @@ public class World
             }
         }
 
-        Debug.Log("World created with " + (Width * Height) + " tiles.");
-
         CreateFurniturePrototypes();
+
+        characters = new List<Character>();
     }
 
+    public void CreateCharacter(Tile tile)
+    {
+        Character character = new Character(Tiles[Width / 2, Height / 2]);
+
+        if (cbOnCharacterCreated != null)
+        {
+            cbOnCharacterCreated(character);
+        }
+
+        characters.Add(character);
+    }
 
     public Tile GetTileAt(int x, int y)
     {
@@ -79,7 +92,7 @@ public class World
         // TODO: This assumes 1x1 tiles with no rotation
         if (!_furniturePrototypes.ContainsKey(furnitureType))
         {
-            Debug.LogError("PlaceFurniture - Unable to place furniture, key doesn't exists!");
+            Debug.LogError("PlaceFurniture - Unable to place character, key doesn't exists!");
             return;
         }
 
@@ -116,6 +129,16 @@ public class World
         cbOnTileChanged -= callback;
     }
 
+    public void RegisterOnCharacterCreated(Action<Character> callback)
+    {
+        cbOnCharacterCreated += callback;
+    }
+
+    public void UnregisterOnCharacterCreated(Action<Character> callback)
+    {
+        cbOnCharacterCreated -= callback;
+    }
+
     public Furniture GetFurniturePrototype(string furnitureType)
     {
         if (_furniturePrototypes.ContainsKey(furnitureType))
@@ -123,7 +146,7 @@ public class World
             return _furniturePrototypes[furnitureType];
         }
 
-        Debug.LogError("GetFurniturePrototype - Unknown furniture type: " + furnitureType);
+        Debug.LogError("GetFurniturePrototype - Unknown character type: " + furnitureType);
         return null;
     }
 

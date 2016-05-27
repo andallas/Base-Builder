@@ -5,7 +5,7 @@ using System;
 public class Job
 {
     // This class holds info for a queued up job, which can include
-    // things like placing furniture, moving stored inventory,
+    // things like placing character, moving stored inventory,
     // working at a desk, and maybe even fighting enemies.
 
     public Tile Tile { get; protected set; }

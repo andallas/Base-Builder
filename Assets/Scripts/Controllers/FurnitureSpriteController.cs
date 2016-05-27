@@ -22,7 +22,7 @@ public class FurnitureSpriteController : MonoBehaviour
 
     public void OnFurniturePlaced(Furniture furniture)
     {
-        // TODO: Does not consider multi-tile nor rotated furniture.
+        // TODO: Does not consider multi-tile nor rotated character.
 
         int x = furniture.Tile.X;
         int y = furniture.Tile.Y;
@@ -30,7 +30,10 @@ public class FurnitureSpriteController : MonoBehaviour
         furniture_go.name = furniture.Type + "_" + x + "_" + y;
         furniture_go.transform.position = new Vector3(x, y, 0);
         furniture_go.transform.SetParent(transform, true);
-        furniture_go.AddComponent<SpriteRenderer>().sprite = GetSpriteForFurniture(furniture);
+
+        SpriteRenderer furniture_sr = furniture_go.AddComponent<SpriteRenderer>();
+        furniture_sr.sprite = GetSpriteForFurniture(furniture);
+        furniture_sr.sortingLayerName = "Furniture";
 
         furnitureGameObjectMap[furniture] = furniture_go;
 
@@ -102,15 +105,14 @@ public class FurnitureSpriteController : MonoBehaviour
         return null;
     }
 
+
     private void LoadSprites()
     {
         furnitureSprites = new Dictionary<string, Sprite>();
         Sprite[] sprites = Resources.LoadAll<Sprite>("Images/Furniture/");
 
-        Debug.Log("Loading resources:");
         foreach (Sprite s in sprites)
         {
-            Debug.Log(s);
             furnitureSprites[s.name] = s;
         }
     }
@@ -120,7 +122,7 @@ public class FurnitureSpriteController : MonoBehaviour
         // TODO: Make sure the furnitures graphics have been updated
         if (!furnitureGameObjectMap.ContainsKey(furniture))
         {
-            Debug.LogError("OnFurnitureChanged - trying to change visuals for furniture, not found in map.");
+            Debug.LogError("OnCharacterChanged - trying to change visuals for character, not found in map.");
             return;
         }
         GameObject furniture_go = furnitureGameObjectMap[furniture];
