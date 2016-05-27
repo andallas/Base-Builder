@@ -14,15 +14,13 @@ public class World
     private Action<Furniture> cbOnFurniturePlaced;
     private Action<Tile> cbOnTileChanged;
 
-    // TODO: Replace with a dedicated class for managing job queues
-    //       that might also be semi-static, self-initializing, etc...
-    //       For now this is just a public member of World
-    public Queue<Job> jobQueue;
+
+    public JobQueue jobQueue;
 
 
     public World(int width = 100, int height = 100)
     {
-        jobQueue = new Queue<Job>();
+        jobQueue = new JobQueue();
 
         Width = width;
         Height = height;
@@ -116,6 +114,17 @@ public class World
     public void UnregisterOnTileChanged(Action<Tile> callback)
     {
         cbOnTileChanged -= callback;
+    }
+
+    public Furniture GetFurniturePrototype(string furnitureType)
+    {
+        if (_furniturePrototypes.ContainsKey(furnitureType))
+        {
+            return _furniturePrototypes[furnitureType];
+        }
+
+        Debug.LogError("GetFurniturePrototype - Unknown furniture type: " + furnitureType);
+        return null;
     }
 
     

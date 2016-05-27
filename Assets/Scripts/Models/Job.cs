@@ -11,14 +11,17 @@ public class Job
     public Tile Tile { get; protected set; }
     private float jobTime;
 
+    public string JobObjectType { get; protected set; }
+
 
     private Action<Job> cbJobComplete;
     private Action<Job> cbJobCancel;
 
 
-    public Job(Tile tile, Action<Job> cbJobComplete, float jobTime = 1f)
+    public Job(Tile tile, string jobObjectType, Action<Job> cbJobComplete, float jobTime = 1f)
     {
         Tile = tile;
+        JobObjectType = jobObjectType;
         RegisterJobCompleteCallback(cbJobComplete);
     }
 
@@ -31,6 +34,16 @@ public class Job
     public void RegisterJobCancelCallback(Action<Job> callback)
     {
         cbJobCancel += callback;
+    }
+
+    public void UnregisterJobCompleteCallback(Action<Job> callback)
+    {
+        cbJobComplete -= callback;
+    }
+
+    public void UnregisterJobCancelCallback(Action<Job> callback)
+    {
+        cbJobCancel -= callback;
     }
 
     public void DoWork(float workTime)

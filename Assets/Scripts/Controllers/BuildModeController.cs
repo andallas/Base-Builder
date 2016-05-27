@@ -37,10 +37,9 @@ public class BuildModeController : MonoBehaviour
             
             World world = WorldController.WorldData;
 
-            if (world.IsFurniturePlacementValid(furnitureType, tile) &&
-                tile.PendingFurnitureJob == null)
+            if (world.IsFurniturePlacementValid(furnitureType, tile) && tile.PendingFurnitureJob == null)
             {
-                Job job = new Job(tile, (j) =>
+                Job job = new Job(tile, furnitureType, (j) =>
                 {
                     world.PlaceFurniture(furnitureType, j.Tile);
                     // TODO: I don't like having to manually and explicitly set flags that
@@ -58,7 +57,6 @@ public class BuildModeController : MonoBehaviour
                 });
 
                 world.jobQueue.Enqueue(job);
-                Debug.Log("Job Queue Size: " + world.jobQueue.Count);
             }
         }
         else
