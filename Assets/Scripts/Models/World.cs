@@ -161,6 +161,31 @@ public class World
         return null;
     }
 
+    // TODO: For DEBUG use only
+    public void SetupPathfindingExample()
+    {
+        int l = Width / 2 - 5;
+        int b = Height / 2 - 5;
+
+        for (int x = l - 5; x < l + 15; x++)
+        {
+            for (int y = b - 5; y < b + 15; y++)
+            {
+                Tiles[x, y].Type = TileType.Floor;
+
+                if (x == l || x == (l + 9) ||
+                    y == b || y == (b + 9))
+                {
+                    if (x != (l + 9) &&
+                        y != (b + 4))
+                    {
+                        PlaceFurniture("Wall", Tiles[x, y]);
+                    }
+                }
+            }
+        }
+    }
+
     
     private void OnTileChanged(Tile tile)
     {

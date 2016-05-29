@@ -47,4 +47,10 @@ public class WorldController : MonoBehaviour
 
         return WorldData.GetTileAt(x, y);
     }
+
+    // TODO: For DEBUG use only
+    public void GeneratePathfindingLevel()
+    {
+        _worldData.SetupPathfindingExample();
+    }
 }
