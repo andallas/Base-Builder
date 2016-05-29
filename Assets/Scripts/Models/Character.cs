@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using System;
 
 
 public class Character
@@ -8,7 +9,8 @@ public class Character
     private Tile destinationTile;
     private float movementPercentage;
     private float speed = 2f;
-
+    private Action<Character> cbOnChanged;
+    private Job currentJob;
 
     public float X
     {
@@ -35,15 +37,67 @@ public class Character
 
     public void Update(float deltaTime)
     {
-        if (CurrentTile == destinationTile)
+        // Seek new job
+        if (currentJob == null)
         {
-            return;
+            currentJob = CurrentTile.World.jobQueue.Dequeue();
+
+            if (currentJob != null)
+            {
+                destinationTile = currentJob.Tile;
+                currentJob.RegisterJobCancelCallback(OnJobEnded);
+                currentJob.RegisterJobCompleteCallback(OnJobEnded);
+            }
         }
 
-        float totalDistanceToTravel = Mathf.Pow(CurrentTile.X - destinationTile.X, 2) + Mathf.Pow(CurrentTile.Y - destinationTile.Y, 2);
+        // Work on job or move to job
+        if (CurrentTile == destinationTile)
+        {
+            if (currentJob != null)
+            {
+                currentJob.DoWork(deltaTime);
+            }
+        }
+        else
+        {
+            UpdateMovement(deltaTime);
+        }
+       
+        if (cbOnChanged != null)
+        {
+            cbOnChanged(this);
+        }
+    }
+    
+
+    public void SetDestination(Tile tile)
+    {
+        if (!CurrentTile.IsNeighbor(tile))
+        {
+            Debug.LogWarning("SetDestination - Destination tile is not a neighbor.");
+        }
+
+        destinationTile = tile;
+    }
+
+    public void RegisterOnChangedCallback(Action<Character> callback)
+    {
+        cbOnChanged += callback;
+    }
+
+    public void UnregisterONChangedCallback(Action<Character> callback)
+    {
+        cbOnChanged -= callback;
+    }
+
+
+    private void UpdateMovement(float deltaTime)
+    {
+        float totalDistanceToTravel = Mathf.Sqrt(Mathf.Pow(destinationTile.X - CurrentTile.X, 2) + Mathf.Pow(destinationTile.Y - CurrentTile.Y, 2));
         float distanceThisFrame = speed * deltaTime;
-        float percentageThisFrame = totalDistanceToTravel / distanceThisFrame;
-        
+        float percentageThisFrame = distanceThisFrame / totalDistanceToTravel;
+
+        // TODO: Maybe we can LERP this to smooth it out, or use some kind of curve value.
         movementPercentage += percentageThisFrame;
         if (movementPercentage >= 1)
         {
@@ -54,14 +108,14 @@ public class Character
         }
     }
 
-
-    public void SetDestination(Tile tile)
+    private void OnJobEnded(Job job)
     {
-        if (!CurrentTile.IsNeighbor(tile))
+        if (job != currentJob)
         {
-            Debug.LogWarning("SetDestination - Destination tile is not a neighbor.");
+            Debug.LogError("OnJobEnded - Character being told about job that doesn't belong to character. Remember to unregister callbacks!");
+            return;
         }
 
-        destinationTile = tile;
+        currentJob = null;
     }
 }

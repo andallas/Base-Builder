@@ -43,7 +43,16 @@ public class World
         characters = new List<Character>();
     }
 
-    public void CreateCharacter(Tile tile)
+
+    public void Update(float deltaTime)
+    {
+        foreach (Character character in characters)
+        {
+            character.Update(deltaTime);
+        }
+    }
+
+    public Character CreateCharacter(Tile tile)
     {
         Character character = new Character(Tiles[Width / 2, Height / 2]);
 
@@ -53,6 +62,8 @@ public class World
         }
 
         characters.Add(character);
+
+        return character;
     }
 
     public Tile GetTileAt(int x, int y)
