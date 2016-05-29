@@ -93,7 +93,9 @@ public class Character
 
     private void UpdateMovement(float deltaTime)
     {
-        float totalDistanceToTravel = Mathf.Sqrt(Mathf.Pow(destinationTile.X - CurrentTile.X, 2) + Mathf.Pow(destinationTile.Y - CurrentTile.Y, 2));
+        float totalDistanceToTravel = Mathf.Sqrt(   Mathf.Pow(CurrentTile.X - destinationTile.X, 2) +
+                                                    Mathf.Pow(CurrentTile.Y - destinationTile.Y, 2));
+
         float distanceThisFrame = speed * deltaTime;
         float percentageThisFrame = distanceThisFrame / totalDistanceToTravel;
 

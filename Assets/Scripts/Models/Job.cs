@@ -22,6 +22,7 @@ public class Job
     {
         Tile = tile;
         JobObjectType = jobObjectType;
+        this.jobTime = jobTime;
         RegisterJobCompleteCallback(cbJobComplete);
     }
 

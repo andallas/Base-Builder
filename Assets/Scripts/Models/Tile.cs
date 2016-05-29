@@ -65,18 +65,22 @@ public class Tile
 
     public bool IsNeighbor(Tile tile, bool diagonalOk = false)
     {
+        // SAVE: Keeping this comment block here to explain what this line means:
+        //       return (Mathf.Abs(X - tile.X) + Mathf.Abs(Y - tile.Y) == 1 || (diagonalOk && (Mathf.Abs(X - tile.X) == 1 && Mathf.Abs(Y - tile.Y) == 1)));
+
         // I really like how this turned out :)
-        bool sameRow = this.X == tile.X;
-        bool aboveRow = this.X == tile.X + 1;
-        bool belowRow = this.X == tile.X - 1;
+        //int rowOffset = Mathf.Abs(X - tile.X);
+        //int colOffset = Mathf.Abs(Y - tile.Y);
 
-        bool sameCol = this.Y == tile.Y;
-        bool aboveCol = this.Y == tile.Y + 1;
-        bool belowCol = this.Y == tile.Y - 1;
+        //bool aboveOrBelowRow = rowOffset == 1;
+        //bool aboveOrBelowCol = colOffset == 1;
 
-        bool isCardinalNeighbor = (sameRow && (aboveCol || belowCol)) || (sameCol && (aboveRow || belowRow));
-        bool isDiagonalNeighbor = (aboveRow || belowRow) && (aboveCol || belowCol);
+        //bool isCardinalNeighbor = rowOffset + colOffset == 1;
+        //bool isDiagonalNeighbor = aboveOrBelowRow && aboveOrBelowCol;
 
-        return (isCardinalNeighbor || (diagonalOk && isDiagonalNeighbor));
+        //return (isCardinalNeighbor || (diagonalOk && isDiagonalNeighbor));
+
+
+        return (Mathf.Abs(X - tile.X) + Mathf.Abs(Y - tile.Y) == 1 || (diagonalOk && (Mathf.Abs(X - tile.X) == 1 && Mathf.Abs(Y - tile.Y) == 1)));
     }
 }
