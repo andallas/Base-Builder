@@ -64,4 +64,10 @@ public class BuildModeController : MonoBehaviour
             tile.Type = _buildModeTile;
         }
     }
+
+    // TODO: For DEBUG use only
+    public void DoPathfindingTestLevel()
+    {
+        WorldController.WorldData.SetupPathfindingExample();
+    }
 }

@@ -913,8 +913,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 93389434}
-        m_MethodName: GeneratePathfindingLevel
+      - m_Target: {fileID: 615371911}
+        m_MethodName: DoPathfindingTestLevel
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

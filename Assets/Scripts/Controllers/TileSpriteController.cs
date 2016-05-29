@@ -62,7 +62,7 @@ public class TileSpriteController : MonoBehaviour
         }
         else if (tile_data.Type == TileType.Empty)
         {
-            tile_go.GetComponent<SpriteRenderer>().sprite = null;
+            tile_go.GetComponent<SpriteRenderer>().sprite = emptySprite;
         }
         else
         {
