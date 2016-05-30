@@ -27,7 +27,6 @@ public class Tile
     public int Y { get; protected set; }
     public Inventory Inventory { get; protected set; }
     public Furniture Furniture { get; protected set; }
-    public World World { get; protected set; }
     public Job PendingFurnitureJob { get; set; }
 
     // TODO: Implement EnvironmentalFactor.MovementCost and other movement prohibitors/enablers
@@ -56,7 +55,6 @@ public class Tile
 
     public Tile(World world, int x, int y)
     {
-        World = world;
         X = x;
         Y = y;
     }
@@ -109,24 +107,25 @@ public class Tile
     {
         // TODO: Figure out how to cache this so we don't have to do these calculations so often.
         Tile[] neighbors;
+        World world = WorldController.WorldData;
 
         if (diagonalOk)
         {
             neighbors = new Tile[8];
-            neighbors[4] = World.GetTileAt(TilePosition.NorthEast(X, Y));
-            neighbors[5] = World.GetTileAt(TilePosition.SouthEast(X, Y));
-            neighbors[6] = World.GetTileAt(TilePosition.SouthWest(X, Y));
-            neighbors[7] = World.GetTileAt(TilePosition.NorthWest(X, Y));
+            neighbors[4] = world.GetTileAt(TilePosition.NorthEast(X, Y));
+            neighbors[5] = world.GetTileAt(TilePosition.SouthEast(X, Y));
+            neighbors[6] = world.GetTileAt(TilePosition.SouthWest(X, Y));
+            neighbors[7] = world.GetTileAt(TilePosition.NorthWest(X, Y));
         }
         else
         {
             neighbors = new Tile[4];
         }
-        
-        neighbors[0] = World.GetTileAt(TilePosition.North(X, Y));
-        neighbors[1] = World.GetTileAt(TilePosition.East(X, Y));
-        neighbors[2] = World.GetTileAt(TilePosition.South(X, Y));
-        neighbors[3] = World.GetTileAt(TilePosition.West(X, Y));
+
+        neighbors[0] = world.GetTileAt(TilePosition.North(X, Y));
+        neighbors[1] = world.GetTileAt(TilePosition.East(X, Y));
+        neighbors[2] = world.GetTileAt(TilePosition.South(X, Y));
+        neighbors[3] = world.GetTileAt(TilePosition.West(X, Y));
 
         return neighbors;
     }

@@ -2,9 +2,12 @@
 using System.Collections.Generic;
 using System;
 using Pathfinding;
+using System.Xml;
+using System.Xml.Schema;
+using System.Xml.Serialization;
 
 
-public class World
+public class World :IXmlSerializable
 {
     public Tile[,] Tiles { get; protected set; }
     public int Width { get; protected set; }
@@ -35,7 +38,7 @@ public class World
     public JobQueue jobQueue;
 
 
-    public World(int width = 100, int height = 100)
+    public World(int width, int height)
     {
         jobQueue = new JobQueue();
 
@@ -183,6 +186,22 @@ public class World
         return null;
     }
 
+    public void InvalidateTileGraph()
+    {
+        _tileGraph = null;
+    }
+
+    public bool IsFurniturePlacementValid(string furnitureType, Tile tile)
+    {
+        bool result = false;
+        if (_furniturePrototypes.ContainsKey(furnitureType))
+        {
+            result = _furniturePrototypes[furnitureType].IsValidPosition(tile);
+        }
+
+        return result;
+    }
+
     // TODO: For DEBUG use only
     public void SetupPathfindingExample()
     {
@@ -208,11 +227,6 @@ public class World
         }
     }
 
-    public void InvalidateTileGraph()
-    {
-        _tileGraph = null;
-    }
-
 
     private void OnTileChanged(Tile tile)
     {
@@ -235,14 +249,37 @@ public class World
                                                                     linksToNeighbor: true));
     }
 
-    public bool IsFurniturePlacementValid(string furnitureType, Tile tile)
-    {
-        bool result = false;
-        if (_furniturePrototypes.ContainsKey(furnitureType))
-        {
-            result = _furniturePrototypes[furnitureType].IsValidPosition(tile);
-        }
 
-        return result;
+
+
+
+    #region Saving & Loading
+    public World()
+    {
+        
     }
+
+    public XmlSchema GetSchema()
+    {
+        return null;
+    }
+
+    public void WriteXml(XmlWriter writer)
+    {
+        // Save info here
+        writer.WriteAttributeString("Width", Width.ToString());
+        writer.WriteAttributeString("Height", Height.ToString());
+
+        //writer.WriteStartElement("Width");
+        //writer.WriteValue(Width);
+        //writer.WriteEndElement();
+    }
+
+    public void ReadXml(XmlReader reader)
+    {
+        // Load info here
+    }
+
+
+    #endregion
 }

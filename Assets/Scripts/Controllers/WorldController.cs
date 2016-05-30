@@ -1,6 +1,9 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine.SceneManagement;
+using System.Xml.Serialization;
+using System.IO;
 
 
 public class WorldController : MonoBehaviour
@@ -14,12 +17,14 @@ public class WorldController : MonoBehaviour
         {
             if (_worldData == null)
             {
-                _worldData = new World();
+                _worldData = new World(100, 100);
             }
 
             return _worldData;
         }
     }
+
+    private static bool loadWorld = false;
 
     
     void OnEnable()
@@ -30,7 +35,15 @@ public class WorldController : MonoBehaviour
         }
         Instance = this;
 
-        Camera.main.transform.position = new Vector3(WorldData.Width / 2, WorldData.Height / 2, Camera.main.transform.position.z);
+        if (loadWorld)
+        {
+            loadWorld = false;
+            CreateWorldFromSaveFile();
+        }
+        else
+        {
+            CreateEmptyWorld();
+        }
 	}
 
     void Update()
@@ -46,5 +59,41 @@ public class WorldController : MonoBehaviour
         int y = Mathf.FloorToInt(vec.y);
 
         return WorldData.GetTileAt(x, y);
+    }
+
+    public void NewWorld()
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+    }
+
+    public void SaveWorld()
+    {
+        XmlSerializer worldSerializer = new XmlSerializer(typeof(World));
+        TextWriter writer = new StringWriter();
+        worldSerializer.Serialize(writer, _worldData);
+        writer.Close();
+
+        Debug.Log(writer.ToString());
+    }
+
+    public void LoadWorld()
+    {
+        loadWorld = true;
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+    }
+
+
+    private void CreateEmptyWorld()
+    {
+        _worldData = new World(100, 100);
+
+        Camera.main.transform.position = new Vector3(WorldData.Width / 2, WorldData.Height / 2, Camera.main.transform.position.z);
+    }
+
+    private void CreateWorldFromSaveFile()
+    {
+        _worldData = new World(100, 100);
+
+        Camera.main.transform.position = new Vector3(WorldData.Width / 2, WorldData.Height / 2, Camera.main.transform.position.z);
     }
 }

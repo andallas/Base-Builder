@@ -76,7 +76,7 @@ public class Character
     {
         if (currentJob == null)
         {
-            currentJob = CurrentTile.World.jobQueue.Dequeue();
+            currentJob = WorldController.WorldData.jobQueue.Dequeue();
 
             if (currentJob != null)
             {
