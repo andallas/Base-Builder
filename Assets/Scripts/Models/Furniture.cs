@@ -7,17 +7,21 @@ public class Furniture
 {
     public Tile Tile { get; protected set; }
     public string Type { get; protected set; }
-    public float MovementCost { get; protected set; }
     public int Width { get; protected set; }
     public int Height { get; protected set; }
     public bool LinksToNeighbor { get; protected set; }
+    // This is a multiplier. So a value of "2" here means you move twice as slowly (i.e. at half speed). Tile types and other
+    // environmentla effects may be combined. For example; a "rough" tile (cost of 2) with a table furniture (cost of 3)
+    // that is on fire (cost of 3) would have a total movement cost of (2 + 3 + 3 = 8), so  you'd move through this tile
+    // at 1/8th normal speed. NOTE: If MovementCost == 0, then this tile is impassible. (e.g. a wall).
+    public float MovementCost { get; protected set; }
+
 
     private Action<Furniture> cbOnChanged;
-
     private Func<Tile, bool> funcPositionValidation;
 
 
-    // TODO: Implement larger objects
+    // TODO: Implement objects that take up more than 1 tile space
     // TODO: Implement object rotation
 
 

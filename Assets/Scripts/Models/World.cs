@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 using System;
+using Pathfinding;
 
 
 public class World
@@ -8,6 +9,20 @@ public class World
     public Tile[,] Tiles { get; protected set; }
     public int Width { get; protected set; }
     public int Height { get; protected set; }
+
+    private Graph _tileGraph;
+    public Graph TileGraph
+    {
+        get
+        {
+            if (_tileGraph == null)
+            {
+                _tileGraph = new Graph(WorldController.WorldData);
+            }
+
+            return _tileGraph;
+        }
+    }
 
     private List<Character> characters;
     private Dictionary<string, Furniture> _furniturePrototypes;
@@ -76,6 +91,11 @@ public class World
         return Tiles[x, y];
     }
 
+    public Tile GetTileAt(Vector2 position)
+    {
+        return GetTileAt((int)position.x, (int)position.y);
+    }
+
     public void RandomizeTiles()
     {
         Debug.Log("RandomizeTiles");
@@ -117,6 +137,8 @@ public class World
         if (cbOnFurniturePlaced != null)
         {
             cbOnFurniturePlaced(furniture);
+
+            InvalidateTileGraph();
         }
     }
 
@@ -186,7 +208,12 @@ public class World
         }
     }
 
-    
+    public void InvalidateTileGraph()
+    {
+        _tileGraph = null;
+    }
+
+
     private void OnTileChanged(Tile tile)
     {
         if (cbOnTileChanged == null)
@@ -194,6 +221,8 @@ public class World
             return;
         }
         cbOnTileChanged(tile);
+
+        InvalidateTileGraph();
     }
 
     private void CreateFurniturePrototypes()

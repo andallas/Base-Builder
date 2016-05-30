@@ -26,6 +26,12 @@ public class JobSpriteController : MonoBehaviour
     {
         // TODO: We can only do character-building jobs.
 
+        if (jobGameObjectMap.ContainsKey(job))
+        {
+            // job_go already exists -- most likely a job being re-queued
+            return;
+        }
+
         int x = job.Tile.X;
         int y = job.Tile.Y;
 

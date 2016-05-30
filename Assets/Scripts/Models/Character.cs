@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System;
+using Pathfinding;
 
 
 public class Character
@@ -7,6 +8,8 @@ public class Character
     public Tile CurrentTile { get; protected set; }
 
     private Tile destinationTile;
+    private Tile nextTile;
+    private AStar AStarPath;
     private float movementPercentage;
     private float speed = 2f;
     private Action<Character> cbOnChanged;
@@ -16,7 +19,7 @@ public class Character
     {
         get
         {
-            return Mathf.Lerp(CurrentTile.X, destinationTile.X, movementPercentage);
+            return Mathf.Lerp(CurrentTile.X, nextTile.X, movementPercentage);
         }
     }
 
@@ -24,45 +27,23 @@ public class Character
     {
         get
         {
-            return Mathf.Lerp(CurrentTile.Y, destinationTile.Y, movementPercentage);
+            return Mathf.Lerp(CurrentTile.Y, nextTile.Y, movementPercentage);
         }
     }
 
 
     public Character(Tile tile)
     {
-        CurrentTile = destinationTile = tile;
+        CurrentTile = destinationTile = nextTile = tile;
     }
 
 
     public void Update(float deltaTime)
     {
-        // Seek new job
-        if (currentJob == null)
-        {
-            currentJob = CurrentTile.World.jobQueue.Dequeue();
+        UpdateSeekNewJob(deltaTime);
+        UpdateDoJob(deltaTime);
+        UpdateMovement(deltaTime);
 
-            if (currentJob != null)
-            {
-                destinationTile = currentJob.Tile;
-                currentJob.RegisterJobCancelCallback(OnJobEnded);
-                currentJob.RegisterJobCompleteCallback(OnJobEnded);
-            }
-        }
-
-        // Work on job or move to job
-        if (CurrentTile == destinationTile)
-        {
-            if (currentJob != null)
-            {
-                currentJob.DoWork(deltaTime);
-            }
-        }
-        else
-        {
-            UpdateMovement(deltaTime);
-        }
-       
         if (cbOnChanged != null)
         {
             cbOnChanged(this);
@@ -91,10 +72,73 @@ public class Character
     }
 
 
+    private void UpdateSeekNewJob(float deltaTime)
+    {
+        if (currentJob == null)
+        {
+            currentJob = CurrentTile.World.jobQueue.Dequeue();
+
+            if (currentJob != null)
+            {
+                // TODO: Check to see if job is reachable, if not then place it on bottom of queue
+                destinationTile = currentJob.Tile;
+                currentJob.RegisterJobCancelCallback(OnJobEnded);
+                currentJob.RegisterJobCompleteCallback(OnJobEnded);
+            }
+        }
+    }
+
+    private void UpdateDoJob(float deltaTime)
+    {
+        if (CurrentTile == destinationTile)
+        //if (AStarPath != null && AStarPath.Length == 1)
+        {
+            if (currentJob != null)
+            {
+                currentJob.DoWork(deltaTime);
+            }
+        }
+    }
+
     private void UpdateMovement(float deltaTime)
     {
-        float totalDistanceToTravel = Mathf.Sqrt(   Mathf.Pow(CurrentTile.X - destinationTile.X, 2) +
-                                                    Mathf.Pow(CurrentTile.Y - destinationTile.Y, 2));
+        if (CurrentTile == destinationTile)
+        {
+            AStarPath = null;
+            return;
+        }
+
+        // Get the next tile from our pathfinder if we need a new tile
+        if (nextTile == null || nextTile == CurrentTile)
+        {
+            if (AStarPath == null || AStarPath.Length == 0)
+            {
+                AStarPath = new AStar(WorldController.WorldData, CurrentTile, destinationTile);
+                if (AStarPath.Length == 0)
+                {
+                    Debug.LogError("UpdateMovement: AStar returned no path to destination!");
+                    AStarPath = null;
+                    AbandonJob();
+                    return;
+                }
+            }
+
+            nextTile = AStarPath.Dequeue();
+
+            if (nextTile == CurrentTile)
+            {
+                Debug.LogError("UpdateMovement: Next tile is current tile?");
+            }
+        }
+
+        //if (AStarPath != null && AStarPath.Length == 1)
+        //{
+        //    return;
+        //}
+
+        // Travel to the next tile
+        float totalDistanceToTravel = Mathf.Sqrt(   Mathf.Pow(CurrentTile.X - nextTile.X, 2) +
+                                                    Mathf.Pow(CurrentTile.Y - nextTile.Y, 2));
 
         float distanceThisFrame = speed * deltaTime;
         float percentageThisFrame = distanceThisFrame / totalDistanceToTravel;
@@ -103,11 +147,19 @@ public class Character
         movementPercentage += percentageThisFrame;
         if (movementPercentage >= 1)
         {
-            CurrentTile = destinationTile;
+            // TODO: Do we want to retain any overshot movement? Or should we actually continue to zero out movementPercentage?
             movementPercentage = 0;
 
-            // TODO: Do we want to retain any overshot movement? Or should we actually continue to zero out movementPercentage?
+            CurrentTile = nextTile;
         }
+    }
+
+    private void AbandonJob()
+    {
+        nextTile = destinationTile = CurrentTile;
+        AStarPath = null;
+        WorldController.WorldData.jobQueue.Enqueue(currentJob);
+        currentJob = null;
     }
 
     private void OnJobEnded(Job job)
