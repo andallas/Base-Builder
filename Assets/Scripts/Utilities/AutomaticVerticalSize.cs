@@ -3,17 +3,17 @@
 
 public class AutomaticVerticalSize : MonoBehaviour
 {
-    public float childHeight = 35f;
+	public float childHeight = 35f;
 	
 	void Start()
-    {
-        AdjustSize();
+	{
+		AdjustSize();
 	}
-    
-    public void AdjustSize()
-    {
-        Vector2 size = this.GetComponent<RectTransform>().sizeDelta;
-        size.y = (this.transform.childCount * childHeight);
-        this.GetComponent<RectTransform>().sizeDelta = size;
-    }
+	
+	public void AdjustSize()
+	{
+		Vector2 size = this.GetComponent<RectTransform>().sizeDelta;
+		size.y = (this.transform.childCount * childHeight);
+		this.GetComponent<RectTransform>().sizeDelta = size;
+	}
 }

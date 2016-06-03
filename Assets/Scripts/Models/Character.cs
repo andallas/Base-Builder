@@ -1,6 +1,6 @@
-﻿using UnityEngine;
+﻿using Pathfinding;
 using System;
-using Pathfinding;
+using UnityEngine;
 
 
 public class Character

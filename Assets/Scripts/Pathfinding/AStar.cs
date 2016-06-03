@@ -1,7 +1,7 @@
-﻿using UnityEngine;
+﻿using Priority_Queue;
 using System.Collections.Generic;
-using Priority_Queue;
 using System.Linq;
+using UnityEngine;
 
 
 namespace Pathfinding

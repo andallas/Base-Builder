@@ -1,10 +1,10 @@
-﻿using UnityEngine;
-using System.Collections.Generic;
+﻿using Pathfinding;
 using System;
-using Pathfinding;
+using System.Collections.Generic;
 using System.Xml;
 using System.Xml.Schema;
 using System.Xml.Serialization;
+using UnityEngine;
 
 
 public class World :IXmlSerializable
@@ -250,9 +250,6 @@ public class World :IXmlSerializable
     }
 
 
-
-
-
     #region Saving & Loading
     public World()
     {
@@ -279,7 +276,5 @@ public class World :IXmlSerializable
     {
         // Load info here
     }
-
-
     #endregion
 }
