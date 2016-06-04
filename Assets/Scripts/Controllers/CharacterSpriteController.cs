@@ -55,7 +55,7 @@ public class CharacterSpriteController : MonoBehaviour
 
     private void OnCharacterChanged(Character character)
     {
-        // TODO: Make sure the furnitures graphics have been updated
+        // TODO: Make sure the OnCharacterChanged graphics have been updated
         if (!characterGameObjectMap.ContainsKey(character))
         {
             Debug.LogError("OnCharacterChanged - trying to change visuals for character, not found in map.");
