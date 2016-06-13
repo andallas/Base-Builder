@@ -46,6 +46,8 @@ public class World : IXmlSerializable
 		Height = height;
 
 		InitializeWorld();
+
+        CreateCharacter(GetTileAt(Width / 2, Height / 2));
 	}
 
 	private void InitializeWorld()
@@ -266,33 +268,44 @@ public class World : IXmlSerializable
 		writer.WriteAttributeString("Width", Width.ToString());
 		writer.WriteAttributeString("Height", Height.ToString());
 
-		// Save Tiles
-		writer.WriteStartElement("Tiles");
-		for (int x = 0; x < Width; x++)
-		{
-			for (int y = 0; y < Height; y++)
-			{
-				Tiles[x, y].WriteXml(writer);
-			}
-		}
-		writer.WriteEndElement();
-
-		// Save Furnishings
-		writer.WriteStartElement("Furnishings");
-		foreach (Furniture furniture in Furnishings)
-		{
-			furniture.WriteXml(writer);
-		}
-		writer.WriteEndElement();
-
-		// Save Characters
-		writer.WriteStartElement("Characters");
-		foreach (Character character in Characters)
-		{
-			character.WriteXml(writer);
-		}
-		writer.WriteEndElement();
+        SaveTiles(writer);
+        SaveFurnishings(writer);
+        SaveCharacters(writer);
+		
 	}
+
+    private void SaveTiles(XmlWriter writer)
+    {
+        writer.WriteStartElement("Tiles");
+        for (int x = 0; x < Width; x++)
+        {
+            for (int y = 0; y < Height; y++)
+            {
+                Tiles[x, y].WriteXml(writer);
+            }
+        }
+        writer.WriteEndElement();
+    }
+
+    private void SaveFurnishings(XmlWriter writer)
+    {
+        writer.WriteStartElement("Furnishings");
+        foreach (Furniture furniture in Furnishings)
+        {
+            furniture.WriteXml(writer);
+        }
+        writer.WriteEndElement();
+    }
+
+    private void SaveCharacters(XmlWriter writer)
+    {
+        writer.WriteStartElement("Characters");
+        foreach (Character character in Characters)
+        {
+            character.WriteXml(writer);
+        }
+        writer.WriteEndElement();
+    }
 
 	public void ReadXml(XmlReader reader)
 	{
@@ -307,24 +320,24 @@ public class World : IXmlSerializable
 			{
 				case "Tiles":
 					{
-						ReadXml_Tiles(reader);
+						LoadTiles(reader);
 						break;
 					}
 				case "Furnishings":
 					{
-						ReadXml_Furnishings(reader);
+						LoadFurnishings(reader);
 						break;
 					}
 				case "Characters":
 					{
-						ReadXml_Characters(reader);
+						LoadCharacters(reader);
 						break;
 					}
 			}
 		}
 	}
 
-	private void ReadXml_Tiles(XmlReader reader)
+	private void LoadTiles(XmlReader reader)
 	{
 		while (reader.Read())
 		{
@@ -340,7 +353,7 @@ public class World : IXmlSerializable
 		}
 	}
 
-	private void ReadXml_Furnishings(XmlReader reader)
+	private void LoadFurnishings(XmlReader reader)
 	{
 		while (reader.Read())
 		{
@@ -358,7 +371,7 @@ public class World : IXmlSerializable
 		}
 	}
 
-	private void ReadXml_Characters(XmlReader reader)
+	private void LoadCharacters(XmlReader reader)
 	{
 		while (reader.Read())
 		{
@@ -370,8 +383,7 @@ public class World : IXmlSerializable
 			int x = int.Parse(reader.GetAttribute("X"));
 			int y = int.Parse(reader.GetAttribute("Y"));
 
-			Character character = new Character(Tiles[x, y]);
-
+			Character character = CreateCharacter(Tiles[x, y]);
 			character.ReadXml(reader);
 		}
 	}

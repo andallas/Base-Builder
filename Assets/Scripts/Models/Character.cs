@@ -181,7 +181,7 @@ public class Character : IXmlSerializable
 
 	public void WriteXml(XmlWriter writer)
 	{
-		writer.WriteStartElement("Furniture");
+		writer.WriteStartElement("Character");
 			writer.WriteAttributeString("X", CurrentTile.X.ToString());
 			writer.WriteAttributeString("Y", CurrentTile.Y.ToString());
 		writer.WriteEndElement();

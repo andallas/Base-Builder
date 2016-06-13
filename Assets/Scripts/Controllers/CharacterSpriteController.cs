@@ -18,10 +18,10 @@ public class CharacterSpriteController : MonoBehaviour
         World world = WorldController.WorldData;
         world.RegisterOnCharacterCreated(OnCharacterCreated);
 
-
-        // TODO: This is for DEBUG use only!
-        Tile startTile = world.GetTileAt(world.Width / 2, world.Height / 2);
-        world.CreateCharacter(startTile);
+        foreach (Character character in world.Characters)
+        {
+            OnCharacterCreated(character);
+        }
     }
 
 
