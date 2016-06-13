@@ -46,8 +46,8 @@ public class WorldController : MonoBehaviour
 
 	void Update()
 	{
-		// TODO: Add pause/unpause, speed controls, etc...
-		_worldData.Update(Time.deltaTime);
+        // TODO: Add pause/unpause, speed controls, etc...
+        WorldData.Update(Time.deltaTime);
 	}
 
 

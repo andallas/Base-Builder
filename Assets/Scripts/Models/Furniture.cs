@@ -18,25 +18,29 @@ public class Furniture : IXmlSerializable
 	// that is on fire (cost of 3) would have a total movement cost of (2 + 3 + 3 = 8), so  you'd move through this tile
 	// at 1/8th normal speed. NOTE: If MovementCost == 0, then this tile is impassible. (e.g. a wall).
 	public float MovementCost { get; protected set; }
-
-    public Dictionary<string, object> _furnitureParameters;
-    public Action<Furniture, float> _updateActions;
-
-
-    public void Update(float deltaTime)
+    public Dictionary<string, object> FurnitureParameters { get; protected set; }
+    public object FurnitureParameter(string key)
     {
-        // TODO: Get C#6 working with unity so we can do this instead:
-        //       _updateActions?.Invoke(this, deltaTime);
-        if (_updateActions != null)
+        if (FurnitureParameters != null && FurnitureParameters.ContainsKey(key))
         {
-            _updateActions(this, deltaTime);
+            return FurnitureParameters[key];
+        }
+
+        return null;
+    }
+    public void FurnitureParameter(string key, object value)
+    {
+        if (FurnitureParameters != null && FurnitureParameters.ContainsKey(key))
+        {
+            FurnitureParameters[key] = value;
         }
     }
 
+    public Action<Furniture, float> UpdateActions;
 
     private Action<Furniture> cbOnChanged;
-	private Func<Tile, bool> funcPositionValidation;
-
+    private Func<Tile, bool> funcPositionValidation;
+    
 
     // TODO: Implement objects that take up more than 1 tile space
     // TODO: Implement object rotation
@@ -44,11 +48,12 @@ public class Furniture : IXmlSerializable
     // Create furniture from parameters -- this will probably ONLY ever be used for prototypes
     public Furniture(string furnitureType, float movementCost = 1f, int width = 1, int height = 1, bool linksToNeighbor = false)
     {
-        Type = furnitureType;
-        MovementCost = movementCost;
-        Width = width;
-        Height = height;
-        LinksToNeighbor = linksToNeighbor;
+        Type                    = furnitureType;
+        MovementCost            = movementCost;
+        Width                   = width;
+        Height                  = height;
+        LinksToNeighbor         = linksToNeighbor;
+        FurnitureParameters     = new Dictionary<string, object>();
 
         funcPositionValidation = IsValidPosition_Base;
     }
@@ -60,12 +65,11 @@ public class Furniture : IXmlSerializable
 		Width                   = other.Width;
 		Height                  = other.Height;
 		LinksToNeighbor         = other.LinksToNeighbor;
+        FurnitureParameters     = new Dictionary<string, object>(other.FurnitureParameters);
 
-        _furnitureParameters    = new Dictionary<string, object>(other._furnitureParameters);
-
-        if (other._updateActions != null)
+        if (other.UpdateActions != null)
         {
-            _updateActions           = (Action<Furniture, float>)other._updateActions.Clone();
+            UpdateActions = (Action<Furniture, float>)other.UpdateActions.Clone();
         }
     }
     
@@ -117,6 +121,16 @@ public class Furniture : IXmlSerializable
         return new Furniture(this);
     }
 
+    public void Update(float deltaTime)
+    {
+        // TODO: Get C#6 working with Unity so we can do this instead:
+        //       _updateActions?.Invoke(this, deltaTime);
+        if (UpdateActions != null)
+        {
+            UpdateActions(this, deltaTime);
+        }
+    }
+
     public void RegisterOnChangedCallback(Action<Furniture> callback)
 	{
 		cbOnChanged += callback;
@@ -135,16 +149,8 @@ public class Furniture : IXmlSerializable
 
 	private bool IsValidPosition_Base(Tile tile)
 	{
-		if (tile.Type != TileType.Floor)
-		{
-			return false;
-		}
-
-		if (tile.Furniture != null)
-		{
-			return false;
-		}
-		return true;
+		return !(tile.Type != TileType.Floor &&
+                tile.Furniture != null);
 	}
 
 	private bool IsValidPosition_Door(Tile tile)

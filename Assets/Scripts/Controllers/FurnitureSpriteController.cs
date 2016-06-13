@@ -41,7 +41,7 @@ public class FurnitureSpriteController : MonoBehaviour
 
 		furnitureGameObjectMap[furniture] = furniture_go;
 
-		furniture.RegisterOnChangedCallback(OnFurnitureChanged);
+        furniture.RegisterOnChangedCallback(OnFurnitureChanged);
 	}
 
 	public Sprite GetSpriteForFurniture(Furniture furniture)
@@ -131,10 +131,11 @@ public class FurnitureSpriteController : MonoBehaviour
 		}
 		GameObject furniture_go = furnitureGameObjectMap[furniture];
 
-		if (furniture_go == null)
+        if (furniture_go == null)
 		{
 			Debug.LogError("WTF?!?!?!");
 		}
+
 		SpriteRenderer spriteRenderer = furniture_go.GetComponent<SpriteRenderer>();
 		if (spriteRenderer == null)
 		{
