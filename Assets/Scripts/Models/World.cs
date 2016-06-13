@@ -136,7 +136,7 @@ public class World : IXmlSerializable
 		// TODO: This assumes 1x1 tiles with no rotation
 		if (!_furniturePrototypes.ContainsKey(furnitureType))
 		{
-			Debug.LogError("PlaceFurniture - Unable to place character, key doesn't exists!");
+			Debug.LogError("PlaceFurniture - Unable to place furniture, key doesn't exists!");
 			return null;
 		}
 
@@ -255,9 +255,14 @@ public class World : IXmlSerializable
 
 	private void CreateFurniturePrototypes()
 	{
+        // TODO: This function will be replaced by a function that reads all of our furniture data from a text file in the future.
 		_furniturePrototypes = new Dictionary<string, Furniture>();
-		_furniturePrototypes.Add("Wall", Furniture.CreatePrototype(furnitureType: "Wall", movementCost: 0, width: 1, height: 1, linksToNeighbor: true));
-	}
+		_furniturePrototypes.Add("Wall", new Furniture(furnitureType: "Wall", movementCost: 0, width: 1, height: 1, linksToNeighbor: true));
+        _furniturePrototypes.Add("Door", new Furniture(furnitureType: "Door", movementCost: 0, width: 1, height: 1, linksToNeighbor: true));
+
+        _furniturePrototypes["Door"]._furnitureParameters["openPercentage"] = 0f;
+        _furniturePrototypes["Door"]._updateActions += FurnitureActions.Door_UpdateAction;
+    }
 
 
 	#region Saving & Loading

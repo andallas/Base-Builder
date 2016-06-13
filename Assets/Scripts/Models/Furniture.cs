@@ -3,6 +3,7 @@ using UnityEngine;
 using System.Xml;
 using System.Xml.Schema;
 using System.Xml.Serialization;
+using System.Collections.Generic;
 
 
 public class Furniture : IXmlSerializable
@@ -18,29 +19,56 @@ public class Furniture : IXmlSerializable
 	// at 1/8th normal speed. NOTE: If MovementCost == 0, then this tile is impassible. (e.g. a wall).
 	public float MovementCost { get; protected set; }
 
+    public Dictionary<string, object> _furnitureParameters;
+    public Action<Furniture, float> _updateActions;
 
-	private Action<Furniture> cbOnChanged;
+
+    public void Update(float deltaTime)
+    {
+        // TODO: Get C#6 working with unity so we can do this instead:
+        //       _updateActions?.Invoke(this, deltaTime);
+        if (_updateActions != null)
+        {
+            _updateActions(this, deltaTime);
+        }
+    }
+
+
+    private Action<Furniture> cbOnChanged;
 	private Func<Tile, bool> funcPositionValidation;
 
 
-	// TODO: Implement objects that take up more than 1 tile space
-	// TODO: Implement object rotation
+    // TODO: Implement objects that take up more than 1 tile space
+    // TODO: Implement object rotation
 
+    // Create furniture from parameters -- this will probably ONLY ever be used for prototypes
+    public Furniture(string furnitureType, float movementCost = 1f, int width = 1, int height = 1, bool linksToNeighbor = false)
+    {
+        Type = furnitureType;
+        MovementCost = movementCost;
+        Width = width;
+        Height = height;
+        LinksToNeighbor = linksToNeighbor;
 
-	static public Furniture CreatePrototype(string furnitureType, float movementCost = 1f, int width = 1, int height = 1, bool linksToNeighbor = false)
-	{
-		Furniture furniture = new Furniture();
+        funcPositionValidation = IsValidPosition_Base;
+    }
 
-		furniture.Type              = furnitureType;
-		furniture.MovementCost      = movementCost;
-		furniture.Width             = width;
-		furniture.Height            = height;
-		furniture.LinksToNeighbor   = linksToNeighbor;
+    protected Furniture(Furniture other)
+    {
+        Type                    = other.Type;
+		MovementCost            = other.MovementCost;
+		Width                   = other.Width;
+		Height                  = other.Height;
+		LinksToNeighbor         = other.LinksToNeighbor;
 
-		furniture.funcPositionValidation = furniture.IsValidPosition_Base;
+        _furnitureParameters    = new Dictionary<string, object>(other._furnitureParameters);
 
-		return furniture;
-	}
+        if (other._updateActions != null)
+        {
+            _updateActions           = (Action<Furniture, float>)other._updateActions.Clone();
+        }
+    }
+    
 
 	static public Furniture PlaceInstance(Furniture proto, Tile tile)
 	{
@@ -50,13 +78,7 @@ public class Furniture : IXmlSerializable
 			return null;
 		}
 
-		Furniture furniture = new Furniture();
-
-		furniture.Type              = proto.Type;
-		furniture.MovementCost      = proto.MovementCost;
-		furniture.Width             = proto.Width;
-		furniture.Height            = proto.Height;
-		furniture.LinksToNeighbor   = proto.LinksToNeighbor;
+		Furniture furniture = proto.Clone();
 		furniture.Tile = tile;
 
 		if (!tile.InstallFurniture(furniture))
@@ -64,43 +86,38 @@ public class Furniture : IXmlSerializable
 			return null;
 		}
 
-		if (furniture.LinksToNeighbor)
-		{
-			int x = tile.X;
-			int y = tile.Y;
-			World world = WorldController.WorldData;
-
-			Tile t;
-			t = world.GetTileAt(x, y + 1);
-			if (t != null && t.Furniture != null && t.Furniture.cbOnChanged != null && t.Furniture.Type == furniture.Type)
-			{
-				t.Furniture.cbOnChanged(t.Furniture);
-			}
-
-			t = world.GetTileAt(x + 1, y);
-			if (t != null && t.Furniture != null && t.Furniture.cbOnChanged != null && t.Furniture.Type == furniture.Type)
-			{
-				t.Furniture.cbOnChanged(t.Furniture);
-			}
-
-			t = world.GetTileAt(x, y - 1);
-			if (t != null && t.Furniture != null && t.Furniture.cbOnChanged != null && t.Furniture.Type == furniture.Type)
-			{
-				t.Furniture.cbOnChanged(t.Furniture);
-			}
-
-			t = world.GetTileAt(x - 1, y);
-			if (t != null && t.Furniture != null && t.Furniture.cbOnChanged != null && t.Furniture.Type == furniture.Type)
-			{
-				t.Furniture.cbOnChanged(t.Furniture);
-			}
-		}
+        if (furniture.LinksToNeighbor)
+        {
+            UpdateNeighbors(tile.X, tile.Y, furniture.Type);
+        }
 
 		return furniture;
 	}
 
+    static private void UpdateNeighbors(int x, int y, string furnitureType)
+    {
+        World world = WorldController.WorldData;
+        UpdateNeighborAtTile(world.GetTileAt(x, y + 1), furnitureType);
+        UpdateNeighborAtTile(world.GetTileAt(x + 1, y), furnitureType);
+        UpdateNeighborAtTile(world.GetTileAt(x, y - 1), furnitureType);
+        UpdateNeighborAtTile(world.GetTileAt(x - 1, y), furnitureType);
+    }
 
-	public void RegisterOnChangedCallback(Action<Furniture> callback)
+    static private void UpdateNeighborAtTile(Tile t, string furnitureType)
+    {
+        if (t != null && t.Furniture != null && t.Furniture.cbOnChanged != null && t.Furniture.Type == furnitureType)
+        {
+            t.Furniture.cbOnChanged(t.Furniture);
+        }
+    }
+
+
+    virtual public Furniture Clone()
+    {
+        return new Furniture(this);
+    }
+
+    public void RegisterOnChangedCallback(Action<Furniture> callback)
 	{
 		cbOnChanged += callback;
 	}

@@ -1,9 +1,11 @@
 fileFormatVersion: 2
 guid: 3501bfd8a4bbe424e933eb63bb6c7a28
-timeCreated: 1463211248
+timeCreated: 1465778679
 licenseType: Free
 TextureImporter:
-  fileIDToRecycleName: {}
+  fileIDToRecycleName:
+    21300000: Door_
+    21300002: Door_NS
   serializedVersion: 2
   mipmaps:
     mipMapMode: 0
@@ -49,7 +51,37 @@ TextureImporter:
   textureType: 8
   buildTargetSettings: []
   spriteSheet:
-    sprites: []
+    sprites:
+    - name: Door_
+      rect:
+        serializedVersion: 2
+        x: 32
+        y: 224
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -16, y: -4}
+        - {x: 16, y: -4}
+        - {x: 16, y: 4}
+        - {x: -16, y: 4}
+    - name: Door_NS
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 192
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: 4, y: -16}
+        - {x: 4, y: 16}
+        - {x: -4, y: 16}
+        - {x: -4, y: -16}
     outline: []
   spritePackingTag: 
   userData: 
