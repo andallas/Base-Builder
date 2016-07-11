@@ -96,8 +96,7 @@ public class WorldController : MonoBehaviour
 		TextReader reader = new StringReader(PlayerPrefs.GetString("SaveGame00"));
 		_worldData = (World)worldSerializer.Deserialize(reader);
 		reader.Close();
-
-
+        
 		Camera.main.transform.position = new Vector3(WorldData.Width / 2, WorldData.Height / 2, Camera.main.transform.position.z);
 	}
 }

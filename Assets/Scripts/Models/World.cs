@@ -12,7 +12,7 @@ public class World : IXmlSerializable
 	public int Width { get; protected set; }
 	public int Height { get; protected set; }
 	public Tile[,] Tiles { get; protected set; }
-	public List<Furniture> Furnishings { get; protected set; }
+	public List<Furniture> Furnitures { get; protected set; }
 	public List<Character> Characters { get; protected set; }
 	
 	private Graph _tileGraph;
@@ -68,7 +68,7 @@ public class World : IXmlSerializable
 		CreateFurniturePrototypes();
 
 		Characters = new List<Character>();
-		Furnishings = new List<Furniture>();
+		Furnitures = new List<Furniture>();
 	}
 
 
@@ -79,7 +79,7 @@ public class World : IXmlSerializable
 			character.Update(deltaTime);
 		}
 
-        foreach (Furniture furniture in Furnishings)
+        foreach (Furniture furniture in Furnitures)
         {
             furniture.Update(deltaTime);
         }
@@ -152,7 +152,7 @@ public class World : IXmlSerializable
 			return null;
 		}
 
-		Furnishings.Add(furniture);
+		Furnitures.Add(furniture);
 
 		if (cbOnFurnitureCreated != null)
 		{
@@ -263,7 +263,7 @@ public class World : IXmlSerializable
         // TODO: This function will be replaced by a function that reads all of our furniture data from a text file in the future.
 		_furniturePrototypes = new Dictionary<string, Furniture>();
 		_furniturePrototypes.Add("Wall", new Furniture(furnitureType: "Wall", movementCost: 0, width: 1, height: 1, linksToNeighbor: true));
-        _furniturePrototypes.Add("Door", new Furniture(furnitureType: "Door", movementCost: 0, width: 1, height: 1, linksToNeighbor: true));
+        _furniturePrototypes.Add("Door", new Furniture(furnitureType: "Door", movementCost: 1, width: 1, height: 1, linksToNeighbor: false));
 
         if (_furniturePrototypes.ContainsKey("Door"))
         {
@@ -282,7 +282,7 @@ public class World : IXmlSerializable
 		writer.WriteAttributeString("Height", Height.ToString());
 
         SaveTiles(writer);
-        SaveFurnishings(writer);
+        SaveFurnitures(writer);
         SaveCharacters(writer);
 		
 	}
@@ -300,10 +300,10 @@ public class World : IXmlSerializable
         writer.WriteEndElement();
     }
 
-    private void SaveFurnishings(XmlWriter writer)
+    private void SaveFurnitures(XmlWriter writer)
     {
-        writer.WriteStartElement("Furnishings");
-        foreach (Furniture furniture in Furnishings)
+        writer.WriteStartElement("Furnitures");
+        foreach (Furniture furniture in Furnitures)
         {
             furniture.WriteXml(writer);
         }
@@ -336,9 +336,9 @@ public class World : IXmlSerializable
 						LoadTiles(reader);
 						break;
 					}
-				case "Furnishings":
+				case "Furnitures":
 					{
-						LoadFurnishings(reader);
+                        LoadFurnitures(reader);
 						break;
 					}
 				case "Characters":
@@ -365,7 +365,7 @@ public class World : IXmlSerializable
         }
 	}
 
-	private void LoadFurnishings(XmlReader reader)
+	private void LoadFurnitures(XmlReader reader)
 	{
         if (reader.ReadToDescendant("Furniture"))
         {

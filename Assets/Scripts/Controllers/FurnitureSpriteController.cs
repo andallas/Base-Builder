@@ -17,7 +17,7 @@ public class FurnitureSpriteController : MonoBehaviour
 
 		WorldController.WorldData.RegisterOnFurnitureCreated(OnFurnitureCreated);
 
-		foreach (Furniture furniture in WorldController.WorldData.Furnishings)
+		foreach (Furniture furniture in WorldController.WorldData.Furnitures)
 		{
 			OnFurnitureCreated(furniture);
 		}

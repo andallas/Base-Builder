@@ -18,17 +18,18 @@ public class Furniture : IXmlSerializable
 	// that is on fire (cost of 3) would have a total movement cost of (2 + 3 + 3 = 8), so  you'd move through this tile
 	// at 1/8th normal speed. NOTE: If MovementCost == 0, then this tile is impassible. (e.g. a wall).
 	public float MovementCost { get; protected set; }
-    public Dictionary<string, object> FurnitureParameters { get; protected set; }
-    public object FurnitureParameter(string key)
+    public Dictionary<string, float> FurnitureParameters { get; protected set; }
+    public float FurnitureParameter(string key)
     {
         if (FurnitureParameters != null && FurnitureParameters.ContainsKey(key))
         {
             return FurnitureParameters[key];
         }
 
-        return null;
+        Debug.LogErrorFormat("No furniture parameter found with key {0}", key);
+        return 0.0f;
     }
-    public void FurnitureParameter(string key, object value)
+    public void FurnitureParameter(string key, float value)
     {
         if (FurnitureParameters != null && FurnitureParameters.ContainsKey(key))
         {
@@ -53,7 +54,7 @@ public class Furniture : IXmlSerializable
         Width                   = width;
         Height                  = height;
         LinksToNeighbor         = linksToNeighbor;
-        FurnitureParameters     = new Dictionary<string, object>();
+        FurnitureParameters     = new Dictionary<string, float>();
 
         funcPositionValidation = IsValidPosition_Base;
     }
@@ -65,7 +66,7 @@ public class Furniture : IXmlSerializable
 		Width                   = other.Width;
 		Height                  = other.Height;
 		LinksToNeighbor         = other.LinksToNeighbor;
-        FurnitureParameters     = new Dictionary<string, object>(other.FurnitureParameters);
+        FurnitureParameters     = new Dictionary<string, float>(other.FurnitureParameters);
 
         if (other.UpdateActions != null)
         {
@@ -174,13 +175,29 @@ public class Furniture : IXmlSerializable
 			writer.WriteAttributeString("X", Tile.X.ToString());
 			writer.WriteAttributeString("Y", Tile.Y.ToString());
 			writer.WriteAttributeString("Type", Type.ToString());
-			writer.WriteAttributeString("MovementCost", MovementCost.ToString());
-		writer.WriteEndElement();
-	}
+
+            foreach (string k in FurnitureParameters.Keys)
+            {
+                writer.WriteStartElement("Param");
+                    writer.WriteAttributeString("name", k);
+                    writer.WriteAttributeString("value", FurnitureParameters[k].ToString());
+                writer.WriteEndElement();
+            }
+        writer.WriteEndElement();
+    }
 
 	public void ReadXml(XmlReader reader)
 	{
-		MovementCost = float.Parse(reader.GetAttribute("MovementCost"));
+        if (reader.ReadToDescendant("Param"))
+        {
+            do
+            {
+                string k = reader.GetAttribute("name");
+                float v = float.Parse(reader.GetAttribute("value"));
+                FurnitureParameters[k] = v;
+            }
+            while (reader.ReadToNextSibling("Param"));
+        }
 	}
 	#endregion
 }

@@ -68,7 +68,7 @@ public class Character : IXmlSerializable
 		cbOnChanged += callback;
 	}
 
-	public void UnregisterONChangedCallback(Action<Character> callback)
+	public void UnregisterOnChangedCallback(Action<Character> callback)
 	{
 		cbOnChanged -= callback;
 	}
@@ -123,9 +123,10 @@ public class Character : IXmlSerializable
 					AbandonJob();
 					return;
 				}
-			}
-
-			nextTile = AStarPath.Dequeue();
+                nextTile = AStarPath.Dequeue();
+            }
+            
+            nextTile = AStarPath.Dequeue();
 
 			if (nextTile == CurrentTile)
 			{
@@ -142,7 +143,15 @@ public class Character : IXmlSerializable
 		float totalDistanceToTravel = Mathf.Sqrt(   Mathf.Pow(CurrentTile.X - nextTile.X, 2) +
 													Mathf.Pow(CurrentTile.Y - nextTile.Y, 2));
 
-		float distanceThisFrame = speed * deltaTime;
+        if (nextTile.MovementCost == 0)
+        {
+            Debug.LogError("FIXME: A character tried to enter an unwalkable tile!");
+            nextTile = null;
+            AStarPath = null;
+            return;
+        }
+
+		float distanceThisFrame = speed / nextTile.MovementCost * deltaTime;
 		float percentageThisFrame = distanceThisFrame / totalDistanceToTravel;
 
 		// TODO: Maybe we can LERP this to smooth it out, or use some kind of curve value.

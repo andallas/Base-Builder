@@ -12,7 +12,7 @@ public class CharacterSpriteController : MonoBehaviour
     void Start()
     {
         LoadSprites();
-
+        
         characterGameObjectMap = new Dictionary<Character, GameObject>();
 
         World world = WorldController.WorldData;
@@ -35,8 +35,15 @@ public class CharacterSpriteController : MonoBehaviour
         SpriteRenderer character_sr = character_go.AddComponent<SpriteRenderer>();
         character_sr.sprite = characterSprites["p1_front"];
         character_sr.sortingLayerName = "Characters";
-
-        characterGameObjectMap[character] = character_go;
+        
+        if (characterGameObjectMap.ContainsKey(character))
+        {
+            characterGameObjectMap[character] = character_go;
+        }
+        else
+        {
+            characterGameObjectMap.Add(character, character_go);
+        }
 
         character.RegisterOnChangedCallback(OnCharacterChanged);
     }
