@@ -44,6 +44,24 @@ public class JobSpriteController : MonoBehaviour
         job_sr.color = new Color(0.5f, 1f, 0.5f, 0.25f);
         job_sr.sortingLayerName = "Jobs";
 
+        // TODO: This hardcoding is not ideal!
+        if (job.JobObjectType == "Door")
+        {
+            // By default, the door graphic is meant for walls to the E/W
+            // Check to see if we actually have a wall N/S, and if so then
+            // rotate this game object by 90 degrees
+
+            Tile N = WorldController.WorldData.GetTileAt(job.Tile.X, job.Tile.Y + 1);
+            Tile S = WorldController.WorldData.GetTileAt(job.Tile.X, job.Tile.Y - 1);
+            Tile E = WorldController.WorldData.GetTileAt(job.Tile.X + 1, job.Tile.Y);
+            Tile W = WorldController.WorldData.GetTileAt(job.Tile.X - 1, job.Tile.Y);
+
+            if (N != null && S != null && N.Furniture != null && S.Furniture != null && N.Furniture.Type == "Wall" && S.Furniture.Type == "Wall")
+            {
+                job_go.transform.rotation = Quaternion.Euler(0, 0, 90);
+            }
+        }
+
         jobGameObjectMap.Add(job, job_go);
 
         job.RegisterJobCompleteCallback(OnJobEnded);

@@ -18,28 +18,28 @@ public class Furniture : IXmlSerializable
 	// that is on fire (cost of 3) would have a total movement cost of (2 + 3 + 3 = 8), so  you'd move through this tile
 	// at 1/8th normal speed. NOTE: If MovementCost == 0, then this tile is impassible. (e.g. a wall).
 	public float MovementCost { get; protected set; }
-    public Dictionary<string, float> FurnitureParameters { get; protected set; }
+    public Dictionary<string, float> _furnitureParameters = new Dictionary<string, float>();
     public float FurnitureParameter(string key)
     {
-        if (FurnitureParameters != null && FurnitureParameters.ContainsKey(key))
+        if (_furnitureParameters != null && _furnitureParameters.ContainsKey(key))
         {
-            return FurnitureParameters[key];
+            return _furnitureParameters[key];
         }
 
-        Debug.LogErrorFormat("No furniture parameter found with key {0}", key);
+        Debug.LogErrorFormat("No furniture parameter found with key \"{0}\"", key);
+        
         return 0.0f;
     }
     public void FurnitureParameter(string key, float value)
     {
-        if (FurnitureParameters != null && FurnitureParameters.ContainsKey(key))
-        {
-            FurnitureParameters[key] = value;
-        }
+        _furnitureParameters[key] = value;
     }
 
     public Action<Furniture, float> UpdateActions;
 
-    private Action<Furniture> cbOnChanged;
+    public Func<Furniture, Enterability> RequestEntrance;
+
+    public Action<Furniture> cbOnChanged;
     private Func<Tile, bool> funcPositionValidation;
     
 
@@ -54,7 +54,7 @@ public class Furniture : IXmlSerializable
         Width                   = width;
         Height                  = height;
         LinksToNeighbor         = linksToNeighbor;
-        FurnitureParameters     = new Dictionary<string, float>();
+        _furnitureParameters    = new Dictionary<string, float>();
 
         funcPositionValidation = IsValidPosition_Base;
     }
@@ -66,12 +66,14 @@ public class Furniture : IXmlSerializable
 		Width                   = other.Width;
 		Height                  = other.Height;
 		LinksToNeighbor         = other.LinksToNeighbor;
-        FurnitureParameters     = new Dictionary<string, float>(other.FurnitureParameters);
+        _furnitureParameters    = new Dictionary<string, float>(other._furnitureParameters);
 
         if (other.UpdateActions != null)
         {
             UpdateActions = (Action<Furniture, float>)other.UpdateActions.Clone();
         }
+
+        this.RequestEntrance = other.RequestEntrance;
     }
     
 
@@ -176,11 +178,11 @@ public class Furniture : IXmlSerializable
 			writer.WriteAttributeString("Y", Tile.Y.ToString());
 			writer.WriteAttributeString("Type", Type.ToString());
 
-            foreach (string k in FurnitureParameters.Keys)
+            foreach (string k in _furnitureParameters.Keys)
             {
                 writer.WriteStartElement("Param");
                     writer.WriteAttributeString("name", k);
-                    writer.WriteAttributeString("value", FurnitureParameters[k].ToString());
+                    writer.WriteAttributeString("value", _furnitureParameters[k].ToString());
                 writer.WriteEndElement();
             }
         writer.WriteEndElement();
@@ -194,7 +196,7 @@ public class Furniture : IXmlSerializable
             {
                 string k = reader.GetAttribute("name");
                 float v = float.Parse(reader.GetAttribute("value"));
-                FurnitureParameters[k] = v;
+                _furnitureParameters[k] = v;
             }
             while (reader.ReadToNextSibling("Param"));
         }

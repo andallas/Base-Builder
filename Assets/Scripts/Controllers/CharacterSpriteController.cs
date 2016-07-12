@@ -69,6 +69,12 @@ public class CharacterSpriteController : MonoBehaviour
             return;
         }
         GameObject character_go = characterGameObjectMap[character];
+
+        if (character_go == null)
+        {
+            Debug.LogError("WTF?!?!?!");
+        }
+
         character_go.transform.position = new Vector3(character.X, character.Y, 0);
     }
 }

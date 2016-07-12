@@ -92,63 +92,88 @@ public class Character : IXmlSerializable
 
 	private void UpdateDoJob(float deltaTime)
 	{
-		if (CurrentTile == destinationTile)
-		//if (AStarPath != null && AStarPath.Length == 1)
+		if (currentJob != null && CurrentTile == destinationTile)
 		{
-			if (currentJob != null)
-			{
-				currentJob.DoWork(deltaTime);
-			}
-		}
+            currentJob.DoWork(deltaTime);
+        }
 	}
 
-	private void UpdateMovement(float deltaTime)
-	{
-		if (CurrentTile == destinationTile)
-		{
-			AStarPath = null;
-			return;
-		}
-
-		// Get the next tile from our pathfinder if we need a new tile
-		if (nextTile == null || nextTile == CurrentTile)
-		{
-			if (AStarPath == null || AStarPath.Length == 0)
-			{
-				AStarPath = new AStar(WorldController.WorldData, CurrentTile, destinationTile);
-				if (AStarPath.Length == 0)
-				{
-					Debug.LogError("UpdateMovement: AStar returned no path to destination!");
-					AStarPath = null;
-					AbandonJob();
-					return;
-				}
-                nextTile = AStarPath.Dequeue();
-            }
-            
-            nextTile = AStarPath.Dequeue();
-
-			if (nextTile == CurrentTile)
-			{
-				Debug.LogError("UpdateMovement: Next tile is current tile?");
-			}
-		}
-
-		//if (AStarPath != null && AStarPath.Length == 1)
-		//{
-		//    return;
-		//}
-
-		// Travel to the next tile
-		float totalDistanceToTravel = Mathf.Sqrt(   Mathf.Pow(CurrentTile.X - nextTile.X, 2) +
-													Mathf.Pow(CurrentTile.Y - nextTile.Y, 2));
-
-        if (nextTile.MovementCost == 0)
+    private void UpdateMovement(float deltaTime)
+    {
+        if (CurrentTile == destinationTile)
         {
-            Debug.LogError("FIXME: A character tried to enter an unwalkable tile!");
-            nextTile = null;
             AStarPath = null;
             return;
+        }
+
+        // NOTE:
+        //      currTile = The tile I am currently in (and may be in the process of leaving)
+        //      nextTile = The tile I am about to entering
+        //      destTile = Our final destination -- we never enter this tile directly, but instead use it as a pathfinding 'target'
+        // TODO: When we have a 'recruit' command, keep in mind that we may actually WANT to move directly to the destTile.
+
+        // Get the next tile from our pathfinder if we need a new tile
+        if (nextTile == null || nextTile == CurrentTile)
+        {
+            if (AStarPath == null || AStarPath.Length == 0)
+            {
+                AStarPath = new AStar(WorldController.WorldData, CurrentTile, destinationTile);
+                if (AStarPath.Length == 0)
+                {
+                    Debug.LogError("UpdateMovement: AStar returned no path to destination!");
+                    AStarPath = null;
+                    AbandonJob();
+                    return;
+                }
+                // Let's ignore the first tile, because that's the tile we're currently in.
+                AStarPath.Dequeue();
+            }
+
+            nextTile = AStarPath.Dequeue();
+
+            if (nextTile == CurrentTile)
+            {
+                Debug.LogError("UpdateMovement: Next tile is current tile?");
+            }
+        }
+
+        //if (AStarPath != null && AStarPath.Length == 1)
+        //{
+        //    return;
+        //}
+
+        // Travel to the next tile
+        float totalDistanceToTravel = Mathf.Sqrt(Mathf.Pow(CurrentTile.X - nextTile.X, 2) +
+                                                    Mathf.Pow(CurrentTile.Y - nextTile.Y, 2));
+
+        switch (nextTile.Enterable)
+        {
+            case Enterability.Never:
+                {
+                    // Most likely, a wall was just built and we need to reset our pathfinding information.
+                    // TODO: Ideally, when a wall gets spawned, we should invalidate our path immediately,
+                    //       so that we don't waste a bunch of time walking towards a dead end.
+                    //       To save CPU, maybe we can only check every so often?
+                    //       Or maybe we should register a callback to the OnTileChnaged event?
+                    Debug.LogError("FIXME: A character tried to enter an unwalkable tile!");
+                    nextTile = null;
+                    AStarPath = null;
+                    return;
+                }
+            case Enterability.Soon:
+                {
+                    // We can't enter the tile NOW, but we should be able to enter it in a moment, this is likely a door.
+                    // So we don't bail on our movement/path, but we do return now and don't actually process the movement.
+                    return;
+                }
+            case Enterability.Yes:
+                {
+                    break;
+                }
+            default:
+                {
+                    break;
+                }
         }
 
 		float distanceThisFrame = speed / nextTile.MovementCost * deltaTime;

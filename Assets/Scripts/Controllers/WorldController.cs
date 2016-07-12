@@ -94,6 +94,9 @@ public class WorldController : MonoBehaviour
 	{
 		XmlSerializer worldSerializer = new XmlSerializer(typeof(World));
 		TextReader reader = new StringReader(PlayerPrefs.GetString("SaveGame00"));
+
+        // Set _worldData to null first to wipe out any old callback that shouldn't be referenced any longer
+        _worldData = null;
 		_worldData = (World)worldSerializer.Deserialize(reader);
 		reader.Close();
         

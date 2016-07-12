@@ -87,7 +87,7 @@ public class World : IXmlSerializable
 
 	public Character CreateCharacter(Tile tile)
 	{
-		Character character = new Character(Tiles[Width / 2, Height / 2]);
+		Character character = new Character(tile);
 
 		if (cbOnCharacterCreated != null)
 		{
@@ -268,8 +268,11 @@ public class World : IXmlSerializable
         if (_furniturePrototypes.ContainsKey("Door"))
         {
             _furniturePrototypes["Door"].FurnitureParameter("openPercentage", 0f);
+            _furniturePrototypes["Door"].FurnitureParameter("isOpening", 0f);
             _furniturePrototypes["Door"].UpdateActions += FurnitureActions.Door_UpdateAction;
         }
+
+        _furniturePrototypes["Door"].RequestEntrance = FurnitureActions.Door_RequestEntrance;
     }
 
 
@@ -294,7 +297,10 @@ public class World : IXmlSerializable
         {
             for (int y = 0; y < Height; y++)
             {
-                Tiles[x, y].WriteXml(writer);
+                if (Tiles[x, y].Type != TileType.Empty)
+                {
+                    Tiles[x, y].WriteXml(writer);
+                }
             }
         }
         writer.WriteEndElement();

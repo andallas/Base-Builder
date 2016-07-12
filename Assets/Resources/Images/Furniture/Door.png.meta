@@ -1,11 +1,14 @@
 fileFormatVersion: 2
 guid: 3501bfd8a4bbe424e933eb63bb6c7a28
-timeCreated: 1468270856
+timeCreated: 1468288309
 licenseType: Free
 TextureImporter:
   fileIDToRecycleName:
     21300000: Door
     21300002: Door_NS
+    21300004: Door_SlightlyOpen
+    21300006: Door_MostlyOpen
+    21300008: Door_FullyOpen
   serializedVersion: 2
   mipmaps:
     mipMapMode: 0
@@ -67,10 +70,10 @@ TextureImporter:
         - {x: 16, y: -4}
         - {x: 16, y: 4}
         - {x: -16, y: 4}
-    - name: Door_NS
+    - name: Door_SlightlyOpen
       rect:
         serializedVersion: 2
-        x: 128
+        x: 32
         y: 192
         width: 32
         height: 32
@@ -78,10 +81,46 @@ TextureImporter:
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline:
-      - - {x: 4, y: -16}
-        - {x: 4, y: 16}
-        - {x: -4, y: 16}
-        - {x: -4, y: -16}
+      - - {x: -16, y: 4}
+        - {x: -16, y: -4}
+        - {x: 7, y: -4}
+        - {x: 9, y: -2}
+        - {x: 9, y: 2}
+        - {x: 7, y: 4}
+    - name: Door_MostlyOpen
+      rect:
+        serializedVersion: 2
+        x: 32
+        y: 160
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -16, y: 4}
+        - {x: -16, y: -4}
+        - {x: -3, y: -4}
+        - {x: -1, y: -2}
+        - {x: -1, y: 2}
+        - {x: -3, y: 4}
+    - name: Door_FullyOpen
+      rect:
+        serializedVersion: 2
+        x: 32
+        y: 128
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -16, y: 4}
+        - {x: -16, y: -4}
+        - {x: -14, y: -4}
+        - {x: -12, y: -2}
+        - {x: -12, y: 2}
+        - {x: -14, y: 4}
     outline: []
   spritePackingTag: 
   userData: 

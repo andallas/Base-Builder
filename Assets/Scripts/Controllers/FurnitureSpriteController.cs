@@ -30,12 +30,31 @@ public class FurnitureSpriteController : MonoBehaviour
 		int x = furniture.Tile.X;
 		int y = furniture.Tile.Y;
 
-		GameObject furniture_go = new GameObject();
+        GameObject furniture_go = new GameObject();
+        
 		furniture_go.name = furniture.Type + "_" + x + "_" + y;
 		furniture_go.transform.position = new Vector3(x, y, 0);
 		furniture_go.transform.SetParent(transform, true);
 
-		SpriteRenderer furniture_sr = furniture_go.AddComponent<SpriteRenderer>();
+        // TODO: This hardcoding is not ideal!
+        if (furniture.Type == "Door")
+        {
+            // By default, the door graphic is meant for walls to the E/W
+            // Check to see if we actually have a wall N/S, and if so then
+            // rotate this game object by 90 degrees
+
+            Tile N = WorldController.WorldData.GetTileAt(furniture.Tile.X, furniture.Tile.Y + 1);
+            Tile S = WorldController.WorldData.GetTileAt(furniture.Tile.X, furniture.Tile.Y - 1);
+            Tile E = WorldController.WorldData.GetTileAt(furniture.Tile.X + 1, furniture.Tile.Y);
+            Tile W = WorldController.WorldData.GetTileAt(furniture.Tile.X - 1, furniture.Tile.Y);
+
+            if (N != null && S != null && N.Furniture != null && S.Furniture != null && N.Furniture.Type == "Wall" && S.Furniture.Type == "Wall")
+            {
+                furniture_go.transform.rotation = Quaternion.Euler(0, 0, 90);
+            }
+        }
+
+        SpriteRenderer furniture_sr = furniture_go.AddComponent<SpriteRenderer>();
 		furniture_sr.sprite = GetSpriteForFurniture(furniture);
 		furniture_sr.sortingLayerName = "Furniture";
 
@@ -49,16 +68,43 @@ public class FurnitureSpriteController : MonoBehaviour
 		int x = furniture.Tile.X;
 		int y = furniture.Tile.Y;
 
-		if (!furniture.LinksToNeighbor)
-		{
-			if (!furnitureSprites.ContainsKey(furniture.Type))
-			{
-				Debug.LogError("GetSpriteForFurniture - No sprites with name: " + furniture.Type);
-			}
-			return furnitureSprites[furniture.Type];
-		}
+        string spriteName = furniture.Type + "_";
 
-		string spriteName = furniture.Type + "_";
+        if (!furniture.LinksToNeighbor)
+		{
+            // If this is a door, let's check 'openPercentage' and update the sprite
+            if (furniture.Type == "Door")
+            {
+                float openPercentage = furniture.FurnitureParameter("openPercentage");
+                if (openPercentage <= 0.1f)
+                {
+                    // Door is closed
+                    spriteName = "Door";
+                }
+                else if (openPercentage <= 0.5f)
+                {
+                    // Door is slightly open
+                    spriteName = "Door_SlightlyOpen";
+                }
+                else if (openPercentage <= 0.9f)
+                {
+                    // Door is mostly open
+                    spriteName = "Door_MostlyOpen";
+                }
+                else
+                {
+                    // Door is fully open
+                    spriteName = "Door_FullyOpen";
+                }
+            }
+            
+            if (!furnitureSprites.ContainsKey(spriteName))
+			{
+				Debug.LogErrorFormat("GetSpriteForFurniture - No sprites with name: {0}", spriteName);
+			}
+
+			return furnitureSprites[spriteName];
+		}
 
 		Tile t;
 		t = WorldController.WorldData.GetTileAt(x, y + 1);
@@ -90,7 +136,7 @@ public class FurnitureSpriteController : MonoBehaviour
 			Debug.LogError("GetSpriteForFurniture - No sprites with name: " + spriteName);
 		}
 
-		return furnitureSprites[spriteName];
+        return furnitureSprites[spriteName];
 	}
 
 	public Sprite GetSpriteForFurniture(string furnitureType)
@@ -142,5 +188,5 @@ public class FurnitureSpriteController : MonoBehaviour
 			spriteRenderer = furniture_go.AddComponent<SpriteRenderer>();
 		}
 		spriteRenderer.sprite = GetSpriteForFurniture(furniture);
-	}
+    }
 }

@@ -6,6 +6,7 @@ using System.Xml.Serialization;
 
 
 public enum TileType { Empty, Floor };
+public enum Enterability { Yes, Never, Soon };
 
 public class Tile : IXmlSerializable
 {
@@ -25,7 +26,26 @@ public class Tile : IXmlSerializable
 			}
 		}
 	}
-	public int X { get; protected set; }
+    public Enterability Enterable
+    {
+        get
+        {
+            // This returns true if you can enter this tile right this moment
+
+            if (MovementCost == 0)
+            {
+                return Enterability.Never;
+            }
+
+            // Check our furniture to see if it has a special block on enterability
+            if (Furniture != null && Furniture.RequestEntrance != null)
+            {
+                return Furniture.RequestEntrance(Furniture);
+            }
+            return Enterability.Yes;
+        }
+    }
+    public int X { get; protected set; }
 	public int Y { get; protected set; }
 	public Inventory Inventory { get; protected set; }
 	public Furniture Furniture { get; protected set; }
@@ -40,14 +60,12 @@ public class Tile : IXmlSerializable
 	{
 		get
 		{
+            // This would be for things such as a tile being on fire
 			//float tileEnvironmentalMultiplier = (EnvironmentalFactor != null) ? EnvironmentalFactor.MovementCost : 0;
 			float tileFurnitureMultiplier = (Furniture != null) ? Furniture.MovementCost : 1;
 			float tileTypeMultiplier = (Type != TileType.Empty) ? 1 : 0;
 
-			return
-				//tileEnvironmentalMultiplier *
-				tileFurnitureMultiplier *
-				tileTypeMultiplier;
+			return /*tileEnvironmentalMultiplier **/ tileFurnitureMultiplier * tileTypeMultiplier;
 		}
 	}
 
