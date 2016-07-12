@@ -11,10 +11,11 @@ public class World : IXmlSerializable
 {
 	public int Width { get; protected set; }
 	public int Height { get; protected set; }
-	public Tile[,] Tiles { get; protected set; }
+    public Room Outside { get { return Rooms[0]; } }
+    public Tile[,] Tiles { get; protected set; }
 	public List<Furniture> Furnitures { get; protected set; }
 	public List<Character> Characters { get; protected set; }
-	
+	public List<Room> Rooms { get; protected set; }
 	private Graph _tileGraph;
 	public Graph TileGraph
 	{
@@ -56,13 +57,20 @@ public class World : IXmlSerializable
 
 		Tiles = new Tile[Width, Height];
 
-		for (int x = 0; x < Width; x++)
+        Rooms = new List<Room>();
+        // Create the outside
+        Rooms.Add(new Room());
+
+        for (int x = 0; x < Width; x++)
 		{
 			for (int y = 0; y < Height; y++)
 			{
 				Tiles[x, y] = new Tile(x, y);
 				Tiles[x, y].RegisterOnTileChangedCallback(OnTileChanged);
-			}
+                // Rooms 0 is a reserved room and the "Outside" room
+                Tiles[x, y].ParentRoom = Outside;
+
+            }
 		}
 
 		CreateFurniturePrototypes();
@@ -83,6 +91,18 @@ public class World : IXmlSerializable
         {
             furniture.Update(deltaTime);
         }
+    }
+
+    public void DeleteRoom(Room room)
+    {
+        if (room == Outside)
+        {
+            Debug.LogError("Tried to delete the outside room");
+            return;
+        }
+
+        room.UnassignAllTiles();
+        Rooms.Remove(room);
     }
 
 	public Character CreateCharacter(Tile tile)
@@ -154,11 +174,24 @@ public class World : IXmlSerializable
 
 		Furnitures.Add(furniture);
 
+        // Do we need to recalculate our rooms?
+        if (furniture.RoomEnclosure)
+        {
+            Room.DoRoomFloodFill(furniture);
+        }
+
 		if (cbOnFurnitureCreated != null)
 		{
 			cbOnFurnitureCreated(furniture);
 
-			InvalidateTileGraph();
+            if (furniture.MovementCost != 1)
+            {
+                // Since tiles return movement cost as their base cost multiplied
+                // by the furniture's movement cost, a furniture movement cost
+                // of exactly 1 doesn't impact our pathfinding system, so we can
+                // occasionally avoid invalidating pathfinding graphs
+                InvalidateTileGraph();
+            }
 		}
 
 		return furniture;
@@ -262,8 +295,8 @@ public class World : IXmlSerializable
 	{
         // TODO: This function will be replaced by a function that reads all of our furniture data from a text file in the future.
 		_furniturePrototypes = new Dictionary<string, Furniture>();
-		_furniturePrototypes.Add("Wall", new Furniture(furnitureType: "Wall", movementCost: 0, width: 1, height: 1, linksToNeighbor: true));
-        _furniturePrototypes.Add("Door", new Furniture(furnitureType: "Door", movementCost: 1, width: 1, height: 1, linksToNeighbor: false));
+		_furniturePrototypes.Add("Wall", new Furniture(furnitureType: "Wall", movementCost: 0, width: 1, height: 1, linksToNeighbor: true, roomEnclosure: true));
+        _furniturePrototypes.Add("Door", new Furniture(furnitureType: "Door", movementCost: 1, width: 1, height: 1, linksToNeighbor: false, roomEnclosure: true));
 
         if (_furniturePrototypes.ContainsKey("Door"))
         {

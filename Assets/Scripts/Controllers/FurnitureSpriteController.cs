@@ -45,8 +45,6 @@ public class FurnitureSpriteController : MonoBehaviour
 
             Tile N = WorldController.WorldData.GetTileAt(furniture.Tile.X, furniture.Tile.Y + 1);
             Tile S = WorldController.WorldData.GetTileAt(furniture.Tile.X, furniture.Tile.Y - 1);
-            Tile E = WorldController.WorldData.GetTileAt(furniture.Tile.X + 1, furniture.Tile.Y);
-            Tile W = WorldController.WorldData.GetTileAt(furniture.Tile.X - 1, furniture.Tile.Y);
 
             if (N != null && S != null && N.Furniture != null && S.Furniture != null && N.Furniture.Type == "Wall" && S.Furniture.Type == "Wall")
             {

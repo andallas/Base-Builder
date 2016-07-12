@@ -18,6 +18,7 @@ public class Furniture : IXmlSerializable
 	// that is on fire (cost of 3) would have a total movement cost of (2 + 3 + 3 = 8), so  you'd move through this tile
 	// at 1/8th normal speed. NOTE: If MovementCost == 0, then this tile is impassible. (e.g. a wall).
 	public float MovementCost { get; protected set; }
+    public bool RoomEnclosure { get; protected set; }
     public Dictionary<string, float> _furnitureParameters = new Dictionary<string, float>();
     public float FurnitureParameter(string key)
     {
@@ -47,10 +48,11 @@ public class Furniture : IXmlSerializable
     // TODO: Implement object rotation
 
     // Create furniture from parameters -- this will probably ONLY ever be used for prototypes
-    public Furniture(string furnitureType, float movementCost = 1f, int width = 1, int height = 1, bool linksToNeighbor = false)
+    public Furniture(string furnitureType, float movementCost = 1f, int width = 1, int height = 1, bool linksToNeighbor = false, bool roomEnclosure = false)
     {
         Type                    = furnitureType;
         MovementCost            = movementCost;
+        RoomEnclosure           = roomEnclosure;
         Width                   = width;
         Height                  = height;
         LinksToNeighbor         = linksToNeighbor;
@@ -63,6 +65,7 @@ public class Furniture : IXmlSerializable
     {
         Type                    = other.Type;
 		MovementCost            = other.MovementCost;
+        RoomEnclosure           = other.RoomEnclosure;
 		Width                   = other.Width;
 		Height                  = other.Height;
 		LinksToNeighbor         = other.LinksToNeighbor;

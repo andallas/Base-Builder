@@ -49,7 +49,9 @@ public class Tile : IXmlSerializable
 	public int Y { get; protected set; }
 	public Inventory Inventory { get; protected set; }
 	public Furniture Furniture { get; protected set; }
-	public Job PendingFurnitureJob { get; set; }
+    public Job PendingFurnitureJob { get; set; }
+    public Room ParentRoom { get; set; }
+
 	// TODO: Implement EnvironmentalFactor.MovementCost and other movement prohibitors/enablers
 	// This is a multiplier. So a value of "2" here means you move twice as slowly (i.e. at half speed). Tile types and other
 	// environmentla effects may be combined. For example; a "rough" tile (cost of 2) with a table furniture (cost of 3)

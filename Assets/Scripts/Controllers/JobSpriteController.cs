@@ -53,8 +53,6 @@ public class JobSpriteController : MonoBehaviour
 
             Tile N = WorldController.WorldData.GetTileAt(job.Tile.X, job.Tile.Y + 1);
             Tile S = WorldController.WorldData.GetTileAt(job.Tile.X, job.Tile.Y - 1);
-            Tile E = WorldController.WorldData.GetTileAt(job.Tile.X + 1, job.Tile.Y);
-            Tile W = WorldController.WorldData.GetTileAt(job.Tile.X - 1, job.Tile.Y);
 
             if (N != null && S != null && N.Furniture != null && S.Furniture != null && N.Furniture.Type == "Wall" && S.Furniture.Type == "Wall")
             {
