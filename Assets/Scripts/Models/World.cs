@@ -93,6 +93,11 @@ public class World : IXmlSerializable
         }
     }
 
+    public void AddRoom(Room room)
+    {
+        Rooms.Add(room);
+    }
+
     public void DeleteRoom(Room room)
     {
         if (room == Outside)
@@ -101,8 +106,9 @@ public class World : IXmlSerializable
             return;
         }
 
-        room.UnassignAllTiles();
         Rooms.Remove(room);
+
+        room.UnassignAllTiles();
     }
 
 	public Character CreateCharacter(Tile tile)

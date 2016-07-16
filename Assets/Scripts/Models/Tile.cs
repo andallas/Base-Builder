@@ -151,9 +151,13 @@ public class Tile : IXmlSerializable
 		return neighbors;
 	}
 
+    public Tile North { get { return WorldController.WorldData.GetTileAt(X, Y + 1); } }
+    public Tile South { get { return WorldController.WorldData.GetTileAt(X, Y - 1); } }
+    public Tile East { get { return WorldController.WorldData.GetTileAt(X + 1, Y); } }
+    public Tile West { get { return WorldController.WorldData.GetTileAt(X - 1, Y); } }
 
-	#region Saving & Loading
-	public XmlSchema GetSchema() { return null; }
+    #region Saving & Loading
+    public XmlSchema GetSchema() { return null; }
 
 	public void WriteXml(XmlWriter writer)
 	{
