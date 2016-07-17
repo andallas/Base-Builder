@@ -47,7 +47,11 @@ public class Tile : IXmlSerializable
     }
     public int X { get; protected set; }
 	public int Y { get; protected set; }
-	public Inventory Inventory { get; protected set; }
+    public Tile North { get { return WorldController.WorldData.GetTileAt(X, Y + 1); } }
+    public Tile South { get { return WorldController.WorldData.GetTileAt(X, Y - 1); } }
+    public Tile East { get { return WorldController.WorldData.GetTileAt(X + 1, Y); } }
+    public Tile West { get { return WorldController.WorldData.GetTileAt(X - 1, Y); } }
+    public Inventory Inventory { get; protected set; }
 	public Furniture Furniture { get; protected set; }
     public Job PendingFurnitureJob { get; set; }
     public Room ParentRoom { get; set; }
@@ -150,11 +154,6 @@ public class Tile : IXmlSerializable
 
 		return neighbors;
 	}
-
-    public Tile North { get { return WorldController.WorldData.GetTileAt(X, Y + 1); } }
-    public Tile South { get { return WorldController.WorldData.GetTileAt(X, Y - 1); } }
-    public Tile East { get { return WorldController.WorldData.GetTileAt(X + 1, Y); } }
-    public Tile West { get { return WorldController.WorldData.GetTileAt(X - 1, Y); } }
 
     #region Saving & Loading
     public XmlSchema GetSchema() { return null; }
